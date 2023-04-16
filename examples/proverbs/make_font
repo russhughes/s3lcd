@@ -1,0 +1,16 @@
+#!/bin/sh
+
+# Convert the font to a bitmap
+# usage convert <size>
+
+
+function convert() {
+    python3 ../../utils/font2bitmap.py \
+	    -s "万事起头难。熟能生巧。冰冻三尺，非一日之寒。三个臭皮匠，胜过诸葛亮。今日事，今日毕。师父领进门，修行在个人。一口吃不成胖子。欲速则不达。百闻不如一见。不入虎穴，焉得虎子。" \
+	    NotoSansSC-Regular.otf $1 >notosanssc$1.py
+}
+
+convert $1
+mpy-cross notosanssc$1.py
+mpremote cp notosanssc$1.mpy :notosanssc.mpy
+mpremote cp proverbs.py :

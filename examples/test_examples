@@ -1,0 +1,40 @@
+#!/bin/sh
+
+echo "This script erases, uploads firmware and demos to device, then runs"
+each "each demo. Use CTRL-C to stop the demo, then press return for the next."
+echo
+
+function run() {
+    echo "Running $1..."
+    mpremote run $1
+    read -p "Press enter to continue"
+}
+
+./upload-demos.sh
+
+run bitarray.py
+run bitmap_fonts.py
+run blit_tests/blit_bounce.py
+run chango/chango.py
+run color_test.py
+run feathers.py
+run hello.py
+run hershey.py
+run jpg_tests/jpg_bounce.py
+run jpg_tests/jpg_logo.py
+run jpg_tests/jpg_tests.py
+run mono_fonts/mono_fonts.py
+run nasa/nasa_clock.py
+run nasa/nasa_images.py
+run noto_fonts.py
+run pinball.py
+run png_tests/png_bounce.py
+run png_tests/alien.py
+run proverbs/proverbs.py
+run roids.py
+run scroll.py
+run tiny_hello.py
+run tiny_toasters/tiny_toasters.py
+run toasters/toasters.py
+run toasters_jpg/toasters_jpg.py
+run watch/watch.py

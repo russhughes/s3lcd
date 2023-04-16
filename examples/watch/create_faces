@@ -1,0 +1,7 @@
+#!/bin/sh
+
+./create_face.py 160 80
+./create_face.py 240 320
+./create_face.py 320 170
+./create_face.py 320 240
+./create_face.py 480 320

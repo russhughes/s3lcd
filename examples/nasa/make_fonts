@@ -1,0 +1,12 @@
+#!/bin/sh
+    
+# usage make_font <size>
+
+function font() {
+	../../utils/font2bitmap.py -s '0123456789:. ' Pacifico-Regular.ttf "$1" > "pacifico$1.py"
+}
+
+font 45
+font 80
+font 100
+font 150

@@ -1,0 +1,10 @@
+.vscode
+.idea
+__pycache__
+sphinx/build
+*~
+*.pyc
+*.o
+*.P
+.DS_Store
+.history
