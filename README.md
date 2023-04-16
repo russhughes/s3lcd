@@ -20,6 +20,7 @@ I modified the original driver to add the following features:
 - Drawing and rotating Polygons and filled Polygons.
 - Several example programs. The example programs require a tft_config.py module to be present. Some examples require a tft_buttons.py module as well. You may need to modify the tft_buttons.py module to match the pins your device uses.
 - tft_config.py and tft_buttons.py configuration examples are provided for:
+  - ESP32S3-BOX and BOX-Lite
   - LilyGo T-Display-S3
   - LilyGo T-Dongle-S3
   - LilyGo T-Embed
