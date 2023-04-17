@@ -4,7 +4,7 @@
 
 ## Overview
 
-This is a driver for MicroPython to handle drive devices using the esp_lcd intel 8080 8-bit parallel bus and SPI interfaces. The driver is written in C and is based on [devbis' st7789_mpy driver.](https://github.com/devbis/st7789_mpy)
+This is a driver for MicroPython for devices using the esp_lcd intel 8080 8-bit parallel bus and SPI interfaces. The driver is written in C and is based on [devbis' st7789_mpy driver.](https://github.com/devbis/st7789_mpy)
 
 I modified the original driver to add the following features:
 
