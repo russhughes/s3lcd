@@ -111,6 +111,7 @@ Note: Curly braces `{` and `}` enclose optional parameters and do not imply a Py
 
       | Display | Default Orientation Tables |
       | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+      | 320x480 | ((320, 480, 0, 0, false, true,  false), (480, 320, 0, 0, true,  false, false), (320, 480, 0, 0, false, false, true), (480, 320, 0, 0, true,  true,  true)) |
       | 240x320 | ((240, 320, 0, 0, false, false, false), (320, 240, 0, 0, true, true, false), (240, 320, 0, 0, false, true, true), (320, 240, 0, 0, true, false, true))         |
       | 170x320 | ((170, 320, 35, 0, false, false, false), (320, 170, 0, 35, true, true, false), (170, 320, 35, 0, false, true, true), (320, 170, 0, 35, true, false, true))     |
       | 240x240 | ((240, 240, 0, 0, false, false, false), (240, 240, 0, 0, true, true, false), (240, 240, 0, 80, false, true, true), (240, 240, 80, 0, true, false, true))       |
