@@ -7,7 +7,7 @@ hello.py
 import random
 import time
 
-import vga1_bold_16x32 as big
+import vga2_bold_16x32 as big
 import vga1_8x8 as small
 import tft_config
 import s3lcd
@@ -42,7 +42,8 @@ def center(using_font, text, fg=s3lcd.WHITE, bg=s3lcd.BLACK):
     """
     Centers the given text on the display.
     """
-    length = len(text)
+    length = 1 if isinstance(text, int) else len(text)
+    print(text, length, using_font.WIDTH, using_font.HEIGHT)
     tft.text(
         using_font,
         text,
@@ -63,7 +64,7 @@ def main():
         for color in [s3lcd.RED, s3lcd.GREEN, s3lcd.BLUE]:
             tft.fill(color)
             tft.rect(0, 0, tft.width(), tft.height(), complementary_color(color))
-            center(font, "Hello!", s3lcd.WHITE, color)
+            center(font, b'\xAEHello\xAF', s3lcd.WHITE, color)
             tft.show()
             time.sleep(1)
 

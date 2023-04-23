@@ -1085,8 +1085,9 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_bitmap_obj, 4, 6, s3lcd_bitmap)
 ///
 
 STATIC mp_obj_t s3lcd_text(size_t n_args, const mp_obj_t *args) {
-    char single_char_s[2] = {0, 0};
-    const char *str;
+    uint8_t single_char_s;
+    const uint8_t *source = NULL;
+    size_t source_len = 0;
 
     // extract arguments
     s3lcd_obj_t *self = MP_OBJ_TO_PTR(args[0]);
@@ -1094,10 +1095,21 @@ STATIC mp_obj_t s3lcd_text(size_t n_args, const mp_obj_t *args) {
 
     if (mp_obj_is_int(args[2])) {
         mp_int_t c = mp_obj_get_int(args[2]);
-        single_char_s[0] = c & 0xff;
-        str = single_char_s;
+        single_char_s = (c & 0xff);
+        source = &single_char_s;
+        source_len = 1;
+    } else if (mp_obj_is_str(args[2])) {
+        source = (uint8_t *) mp_obj_str_get_str(args[2]);
+        source_len = strlen((char *)source);
+    } else if (mp_obj_is_type(args[2], &mp_type_bytes)) {
+        mp_obj_t text_data_buff = args[2];
+        mp_buffer_info_t text_bufinfo;
+        mp_get_buffer_raise(text_data_buff, &text_bufinfo, MP_BUFFER_READ);
+        source = text_bufinfo.buf;
+        source_len = text_bufinfo.len;
     } else {
-        str = mp_obj_str_get_str(args[2]);
+        mp_raise_TypeError(MP_ERROR_TEXT("text requires either int, str or bytes."));
+        return mp_const_none;
     }
 
     mp_int_t x0 = mp_obj_get_int(args[3]);
@@ -1121,7 +1133,8 @@ STATIC mp_obj_t s3lcd_text(size_t n_args, const mp_obj_t *args) {
     uint8_t wide = width / 8;
 
     uint8_t chr;
-    while ((chr = *str++)) {
+    while (source_len--) {
+        chr = *source++;
         if (chr >= first && chr <= last) {
             uint16_t buf_idx = 0;
             uint16_t chr_idx = (chr - first) * (height * wide);
