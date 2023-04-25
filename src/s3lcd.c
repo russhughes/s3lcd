@@ -1850,12 +1850,11 @@ STATIC mp_obj_t s3lcd_jpg(size_t n_args, const mp_obj_t *args) {
     JRESULT res;                                    // Result code of TJpgDec API
     JDEC jdec;                                      // Decompression object
     IODEV devid;                                    // User defined device identifier
-    mp_buffer_info_t bufinfo;
+    self->work = (void *)m_malloc(3100);            // Pointer to the work area
     static unsigned int (*input_func)(JDEC *, uint8_t *, unsigned int) = NULL;
 
-    self->work = (void *)m_malloc(3100);            // Pointer to the work area
-
     if (mp_obj_is_type(args[1], &mp_type_bytes)) {
+        mp_buffer_info_t bufinfo;
         mp_get_buffer_raise(args[1], &bufinfo, MP_BUFFER_READ);
         devid.dataIdx = 0;
         devid.data = bufinfo.buf;
@@ -1946,27 +1945,41 @@ STATIC int out_crop(                                // 1:Ok, 0:Aborted
 
 STATIC mp_obj_t s3lcd_jpg_decode(size_t n_args, const mp_obj_t *args) {
     s3lcd_obj_t *self = MP_OBJ_TO_PTR(args[0]);
-    const char *filename;
+    const char *filename = NULL;
 
     if (n_args == 2 || n_args == 6) {
-        filename = mp_obj_str_get_str(args[1]);
         OPTIONAL_ARG(2, mp_int_t, mp_obj_get_int, x, 0)
         OPTIONAL_ARG(3, mp_int_t, mp_obj_get_int, y, 0)
         OPTIONAL_ARG(4, mp_int_t, mp_obj_get_int, width, -1)
         OPTIONAL_ARG(5, mp_int_t, mp_obj_get_int, height, -1)
 
         self->work = (void *)m_malloc(3100);        // Pointer to the work area
-
         JRESULT res;                                // Result code of TJpgDec API
         JDEC jdec;                                  // Decompression object
         IODEV devid;                                // User defined device identifier
         size_t bufsize = 0;
+        static unsigned int (*input_func)(JDEC *, uint8_t *, unsigned int) = NULL;
 
-        self->fp = mp_open(filename, "rb");
-        devid.fp = self->fp;
-        if (devid.fp) {
+        if (mp_obj_is_type(args[1], &mp_type_bytes)) {
+            mp_buffer_info_t bufinfo;
+            mp_get_buffer_raise(args[1], &bufinfo, MP_BUFFER_READ);
+            devid.dataIdx = 0;
+            devid.data = bufinfo.buf;
+            devid.dataLen = bufinfo.len;
+            input_func = buffer_in_func;
+            self->fp = MP_OBJ_NULL;
+        } else {
+            filename = mp_obj_str_get_str(args[1]);
+            self->fp = mp_open(filename, "rb");
+            devid.fp = self->fp;
+            input_func = file_in_func;
+            devid.data = MP_OBJ_NULL;
+            devid.dataLen = 0;
+        }
+
+        if (devid.fp || devid.data) {
             // Prepare to decompress
-            res = jd_prepare(&jdec, file_in_func, self->work, 3100, &devid);
+            res = jd_prepare(&jdec, input_func, self->work, 3100, &devid);
             if (res == JDR_OK) {
                 if (n_args < 6) {
                     x = 0;
@@ -2007,21 +2020,26 @@ STATIC mp_obj_t s3lcd_jpg_decode(size_t n_args, const mp_obj_t *args) {
             } else {
                 mp_raise_msg_varg(&mp_type_RuntimeError, MP_ERROR_TEXT("jpg prepare failed: %d."), res);
             }
-            mp_close(devid.fp);
+
+            if (self->fp) {
+                mp_close(self->fp);
+                self->fp = MP_OBJ_NULL;
+            }
+
+            m_free(self->work);                         // Discard work area
+
+            mp_obj_t result[3] = {
+                mp_obj_new_bytearray(bufsize, (mp_obj_t *)self->work_buffer),
+                mp_obj_new_int(width),
+                mp_obj_new_int(height)
+            };
+
+            return mp_obj_new_tuple(3, result);
+            self->work_buffer = NULL;
         }
-        m_free(self->work);                         // Discard work area
-
-        mp_obj_t result[3] = {
-            mp_obj_new_bytearray(bufsize, (mp_obj_t *)self->work_buffer),
-            mp_obj_new_int(width),
-            mp_obj_new_int(height)
-        };
-
-        return mp_obj_new_tuple(3, result);
-        self->work_buffer = NULL;
+    } else {
+        mp_raise_TypeError(MP_ERROR_TEXT("jpg_decode requires either 1 or 5 arguments"));
     }
-
-    mp_raise_TypeError(MP_ERROR_TEXT("jpg_decode requires either 1 or 5 arguments"));
     return mp_const_none;
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_jpg_decode_obj, 2, 6, s3lcd_jpg_decode);
@@ -2062,7 +2080,6 @@ void pngle_on_draw(pngle_t *pngle, uint32_t x, uint32_t y, uint32_t w, uint32_t 
 STATIC mp_obj_t s3lcd_png(size_t n_args, const mp_obj_t *args) {
     s3lcd_obj_t *self = MP_OBJ_TO_PTR(args[0]);
 
-    const char *filename = mp_obj_str_get_str(args[1]);
     mp_int_t x = mp_obj_get_int(args[2]);
     mp_int_t y = mp_obj_get_int(args[3]);
 
@@ -2079,20 +2096,29 @@ STATIC mp_obj_t s3lcd_png(size_t n_args, const mp_obj_t *args) {
     pngle_set_user_data(pngle, (void *)&user_data);
     pngle_set_draw_callback(pngle, pngle_on_draw);
 
-    self->fp = mp_open(filename, "rb");
-
-    while ((len = mp_readinto(self->fp, buf + remain, self->dma_buffer_size - remain)) > 0) {
-        int fed = pngle_feed(pngle, buf, remain + len);
+    if (mp_obj_is_type(args[1], &mp_type_bytes)) {
+        mp_buffer_info_t bufinfo;
+        mp_get_buffer_raise(args[1], &bufinfo, MP_BUFFER_READ);
+        int fed = pngle_feed(pngle, bufinfo.buf, bufinfo.len);
         if (fed < 0) {
             mp_raise_msg_varg(&mp_type_RuntimeError, MP_ERROR_TEXT("png decompress failed: %s"), pngle_error(pngle));
         }
-        remain = remain + len - fed;
-        if (remain > 0) {
-            memmove(buf, buf + fed, remain);
+    } else {
+        const char *filename = mp_obj_str_get_str(args[1]);
+        self->fp = mp_open(filename, "rb");
+        while ((len = mp_readinto(self->fp, buf + remain, self->dma_buffer_size - remain)) > 0) {
+            int fed = pngle_feed(pngle, buf, remain + len);
+            if (fed < 0) {
+                mp_raise_msg_varg(&mp_type_RuntimeError, MP_ERROR_TEXT("png decompress failed: %s"), pngle_error(pngle));
+            }
+            remain = remain + len - fed;
+            if (remain > 0) {
+                memmove(buf, buf + fed, remain);
+            }
         }
+        mp_close(self->fp);
     }
 
-    mp_close(self->fp);
     pngle_destroy(pngle);
     self->work = NULL;
     return mp_const_none;

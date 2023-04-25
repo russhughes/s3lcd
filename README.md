@@ -230,9 +230,9 @@ Note: Curly braces `{` and `}` enclose optional parameters and do not imply a Py
 
   Returns the string's width in pixels if drawn with the specified font.
 
-- `jpg(jpg_filename, x, y)`
+- `jpg(jpg, x, y)`
 
-  Draws a JPG file in the framebuffer at the given `x` and `y' coordinates as the upper left corner of the image. This method requires an additional 3100 bytes of memory for its work buffer.
+  Draws a JPG file in the framebuffer at the given `x` and `y' coordinates as the upper left corner of the image. This method requires an additional 3100 bytes of memory for its work buffer. The jpg may be a filename or a bytes() or bytearray() object. The jpg will wil be clipped if is not able to fit fully in the framebuffer.
 
 - `jpg_decode(jpg_filename {, x, y, width, height})`
 
@@ -240,9 +240,9 @@ Note: Curly braces `{` and `}` enclose optional parameters and do not imply a Py
 
   If the optional x, y, width, and height parameters are given, the buffer will only contain the specified area of the image. See examples/T-DISPLAY/clock/clock.py and examples/T-DISPLAY/toasters_jpg/toasters_jpg.py for examples.
 
-- `png(png_filename, x, y)`
+- `png(png, x, y)`
 
-  Draws a PNG file in the framebuffer with the upper left corner of the image at the given `x` and `y' coordinates. The PNG will not be clipped; it must be able to fit fully in the framebuffer, or it will not be drawn. Transparency is supported; see the alien.py program in the examples/png folder.
+  Draws a PNG file in the framebuffer with the upper left corner of the image at the given `x` and `y' coordinates. The png may be a filename or a bytes() or bytearray() object. The png will wil be clipped if it is not able to fit fully in the framebuffer. Transparency is supported; see the alien.py program in the examples/png folder.
 
 - `polygon_center(polygon)`
 

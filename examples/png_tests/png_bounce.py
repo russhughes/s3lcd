@@ -37,9 +37,13 @@ def main():
 
         ticks = 1000 // 45
 
+        # read jpg file into buffer without decoding
+        with open("alien.png", "rb") as file:
+            alien = file.read()
+
         while True:
             last = time.ticks_ms()
-            tft.png("alien.png", col, row)
+            tft.png(alien, col, row)
             tft.show()
             tft.clear(0)
 

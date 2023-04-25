@@ -1,11 +1,7 @@
 """
-alien.py
+jpg_tests.py
 
-    Randomly draw alien.jpg on the display using various methods.
-
-    The alien.png is from the Erik Flowers Weather Icons available from
-    https://github.com/erikflowers/weather-icons and is licensed under
-    SIL OFL 1.1
+    Randomly draw MicroPython logo on the display using various methods.
 
 """
 
@@ -30,7 +26,7 @@ def main():
         # enable display and clear screen
         tft.init()
 
-        # read png file into buffer without decoding
+        # read jpg file into buffer without decoding
         with open("logo-64x64.jpg", "rb") as file:
             alien = file.read()
 
@@ -43,6 +39,7 @@ def main():
 
         # display png in random locations
         while True:
+            print(f"Drawing {draw_count} jpg's from a file", end=" ")
             tft.clear(0)
             # decode and draw jpg from a file
             start = time.ticks_ms()
@@ -53,11 +50,12 @@ def main():
                     random.randint(0, tft.height() - bitmap_height),
                     True,
                 )
+            print(f"took {time.ticks_ms() - start} ms.")
 
-            print(
-                f"Drawing {draw_count} jpg's from a file took {time.ticks_ms() - start} ms."
-            )
             tft.show()
+            time.sleep(2)
+
+            print(f"Drawing {draw_count} jpg's from a buffer", end=" ")
             tft.clear(0)
             # decode and draw jpg from a buffer
             start = time.ticks_ms()
@@ -69,10 +67,11 @@ def main():
                     True,
                 )
 
-            print(
-                f"Drawing {draw_count} jpg's from a buffer took {time.ticks_ms() - start} ms."
-            )
+            print(f"took {time.ticks_ms() - start} ms.")
             tft.show()
+            time.sleep(2)
+
+            print(f"Drawing {draw_count} jpg's from a decoded buffer", end=" ")
             tft.clear(0)
             # draw decoded bitmap from a tuple created by jpg_decode()
             start = time.ticks_ms()
@@ -85,10 +84,9 @@ def main():
                     decoded_bitmap[2],
                 )
 
-            print(
-                f"Drawing {draw_count} jpg's from a decoded buffer took {time.ticks_ms() - start} ms.\n"
-            )
+            print(f"took {time.ticks_ms() - start} ms.\n")
             tft.show()
+            time.sleep(2)
 
     finally:
         tft.deinit()
