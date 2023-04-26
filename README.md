@@ -29,7 +29,7 @@ I modified the original driver to add the following features:
 
 ## Pre-compiled firmware
 
-The firmware directory contains pre-compiled MicroPython v1.19.1-451 firmware compiled using ESP IDF v4.4.4. In addition, the firmware includes the C driver and several frozen Python font files. See the README.md file in the fonts folder for more information about the font files.
+The firmware directory contains pre-compiled MicroPython v1.20.0 firmware compiled using ESP IDF v4.4.4. In addition, the firmware includes the C driver and several frozen Python font files. See the README.md file in the fonts folder for more information about the font files.
 
 ## Driver API
 
