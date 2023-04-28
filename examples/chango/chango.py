@@ -10,8 +10,8 @@ import tft_config
 tft = tft_config.config(tft_config.WIDE)
 
 #
-# Large fonts take alot of memory, they should be frozen in the
-# firmaware or cross-compiled using the mpy-cross compiler.
+# Large fonts take a lot of memory, they should be frozen in the
+# firmware or cross-compiled using the mpy-cross compiler.
 #
 
 import chango_16 as font_16

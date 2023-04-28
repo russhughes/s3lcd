@@ -787,7 +787,7 @@ STATIC mp_obj_t dict_lookup(mp_obj_t self_in, mp_obj_t index) {
 
 ///
 /// .write_len(font, string)
-/// return the width in pixes of the string or character if written with a font.
+/// return the width in pixels of the string or character if written with a font.
 /// required parameters:
 /// -- font: a font module
 /// -- string: a string or a single character
