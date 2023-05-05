@@ -17,6 +17,7 @@ I modified the original driver to add the following features:
 - Drawing text using 26 included Hershey vector fonts.
 - Drawing JPGs using the TJpgDec - Tiny JPEG Decompressor R0.01d. from http://elm-chan.org/fsw/tjpgd/00index.html.
 - Drawing PNGs using the pngle library from https://github.com/kikuchan/pngle.
+- Writing PNGs from the framebuffer using the PNGenc library from https://github.com/bitbank2/PNGenc
 - Drawing and rotating Polygons and filled Polygons.
 - Several example programs. The example programs require a tft_config.py module to be present. Some examples require a tft_buttons.py module as well. You may need to modify the tft_buttons.py module to match the pins your device uses.
 - tft_config.py and tft_buttons.py configuration examples are provided for:
@@ -243,6 +244,11 @@ Note: Curly braces `{` and `}` enclose optional parameters and do not imply a Py
 - `png(png, x, y)`
 
   Draws a PNG file in the framebuffer with the upper left corner of the image at the given `x` and `y' coordinates. The png may be a filename or a bytes() or bytearray() object. The png will wil be clipped if it is not able to fit fully in the framebuffer. Transparency is supported; see the alien.py program in the examples/png folder.
+
+- `png_write(file_name)`
+
+  Writes the framebuffer to a png file named `file_name` using PNGenc from https://github.com/bitbank2/PNGenc.
+  Returns file size in bytes.
 
 - `polygon_center(polygon)`
 

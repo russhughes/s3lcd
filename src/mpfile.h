@@ -36,6 +36,7 @@ typedef struct {
     mp_obj_base_t base;
     mp_obj_t file_obj;
     mp_obj_t readinto_fn;
+    mp_obj_t write_fn;
     mp_obj_t seek_fn;
     mp_obj_t tell_fn;
 } mp_file_t;
@@ -47,6 +48,7 @@ typedef struct {
 mp_file_t *mp_file_from_file_obj(mp_obj_t file_obj);
 mp_file_t *mp_open(const char *filename, const char *mode);
 mp_int_t mp_readinto(mp_file_t *file, void *buf, size_t num_bytes);
+mp_int_t mp_write(mp_file_t *file, void *buf, size_t num_bytes);
 off_t mp_seek(mp_file_t *file, off_t offset, int whence);
 off_t mp_tell(mp_file_t *file);
 void mp_close(mp_file_t *file);

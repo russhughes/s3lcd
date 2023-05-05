@@ -60,6 +60,7 @@
 
 #define PNGLE_NO_GAMMA_CORRECTION
 #include "png/pngle.h"
+#include "pngenc/pngenc.h"
 
 #define TAG "S3LCD"
 
@@ -2118,12 +2119,90 @@ STATIC mp_obj_t s3lcd_png(size_t n_args, const mp_obj_t *args) {
         }
         mp_close(self->fp);
     }
-
     pngle_destroy(pngle);
     self->work = NULL;
     return mp_const_none;
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_png_obj, 4, 4, s3lcd_png);
+
+//
+//  png_write fileio callback functions
+//
+
+int32_t pngWrite(PNGFILE *pFile, uint8_t *pBuf, int32_t iLen) {
+    return mp_write((mp_file_t *) pFile->fHandle,  pBuf, iLen);
+}
+
+int32_t pngRead(PNGFILE *pFile, uint8_t *pBuf, int32_t iLen) {
+    return mp_readinto((mp_file_t *) pFile->fHandle, pBuf, iLen);
+}
+
+int32_t pngSeek(PNGFILE *pFile, int32_t iPosition) {
+    return mp_seek((mp_file_t *) pFile->fHandle, iPosition, SEEK_SET);
+}
+
+void *pngOpen(const char *szFilename) {
+    return (void *)mp_open(szFilename, "w+b");
+}
+
+void pngClose(PNGFILE *pFile) {
+    mp_close((mp_file_t *) pFile->fHandle);
+}
+
+//
+// .png_write(file_name)
+//
+// save the framebuffer to a png file using PNGenc from
+// https://github.com/bitbank2/PNGenc
+//
+//  required parameters:
+//  -- filename: the name of the file to save
+//  returns:
+//  -- file size in bytes
+//
+
+STATIC mp_obj_t s3lcd_png_write(size_t n_args, const mp_obj_t *args) {
+    s3lcd_obj_t *self = MP_OBJ_TO_PTR(args[0]);
+    const char *filename = mp_obj_str_get_str(args[1]);
+    int data_size = 0;
+    int work_buffer_size = self->width * 3 * 2;
+    int rc;
+
+    PNGIMAGE *pPNG = (PNGIMAGE *) m_malloc(sizeof(PNGIMAGE));
+    if (pPNG == NULL) {
+        mp_raise_msg(&mp_type_RuntimeError, MP_ERROR_TEXT("memory allocation failed"));
+    }
+    self->work = pPNG;
+
+    self->work_buffer = (uint16_t *) m_malloc(work_buffer_size);
+    if (self->work_buffer == NULL) {
+        mp_raise_msg(&mp_type_RuntimeError, MP_ERROR_TEXT("memory allocation failed"));
+    }
+
+    rc = PNG_openFile(pPNG, filename, pngOpen, pngClose, pngRead, pngWrite, pngSeek);
+    if (rc != PNG_SUCCESS) {
+        mp_raise_msg(&mp_type_RuntimeError, MP_ERROR_TEXT("Error opening output file"));
+    }
+
+    rc = PNG_encodeBegin(pPNG, self->width, self->height, PNG_PIXEL_TRUECOLOR, 24, NULL, 9);
+    if (rc == PNG_SUCCESS) {
+        for (int y=0; y < self->height && rc == PNG_SUCCESS; y++) {
+            rc = PNG_addRGB565Line(
+                pPNG,
+                self->frame_buffer + self->width * y,
+                self->work_buffer,
+                y
+            );
+        }
+        data_size = PNG_close(pPNG);
+    }
+    m_free(pPNG);
+    self->work = NULL;
+    m_free(self->work_buffer);
+    self->work_buffer = NULL;
+    return mp_obj_new_int(data_size);
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_png_write_obj, 2, 2, s3lcd_png_write);
 
 ///
 /// .polygon_center(polygon)
@@ -2597,6 +2676,7 @@ STATIC const mp_rom_map_elem_t s3lcd_locals_dict_table[] = {
     {MP_ROM_QSTR(MP_QSTR_jpg), MP_ROM_PTR(&s3lcd_jpg_obj)},
     {MP_ROM_QSTR(MP_QSTR_jpg_decode), MP_ROM_PTR(&s3lcd_jpg_decode_obj)},
     {MP_ROM_QSTR(MP_QSTR_png), MP_ROM_PTR(&s3lcd_png_obj)},
+    {MP_ROM_QSTR(MP_QSTR_png_write), MP_ROM_PTR(&s3lcd_png_write_obj)},
     {MP_ROM_QSTR(MP_QSTR_polygon_center), MP_ROM_PTR(&s3lcd_polygon_center_obj)},
     {MP_ROM_QSTR(MP_QSTR_polygon), MP_ROM_PTR(&s3lcd_polygon_obj)},
     {MP_ROM_QSTR(MP_QSTR_fill_polygon), MP_ROM_PTR(&s3lcd_fill_polygon_obj)},

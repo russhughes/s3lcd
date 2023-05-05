@@ -44,6 +44,7 @@ mp_file_t *mp_file_from_file_obj(mp_obj_t file_obj) {
     file->base.type = &mp_file_type;
     file->file_obj = file_obj;
     file->readinto_fn = mp_load_attr(file->file_obj, MP_QSTR_readinto);
+    file->write_fn = mp_load_attr(file->file_obj, MP_QSTR_write);
     file->seek_fn = mp_load_attr(file->file_obj, MP_QSTR_seek);
     file->tell_fn = mp_load_attr(file->file_obj, MP_QSTR_tell);
 
@@ -67,6 +68,15 @@ mp_int_t mp_readinto(mp_file_t *file, void *buf, size_t num_bytes) {
     }
     nread = mp_obj_get_int(bytes_read);
     return nread;
+}
+
+mp_int_t mp_write(mp_file_t *file, void *buf, size_t num_bytes) {
+    mp_obj_t bytearray = mp_obj_new_bytearray_by_ref(num_bytes, buf);
+    mp_obj_t bytes_written = mp_call_function_1(file->write_fn, bytearray);
+    if (bytes_written == mp_const_none) {
+        return 0;
+    }
+    return mp_obj_get_int(bytes_written);
 }
 
 off_t mp_seek(mp_file_t *file, off_t offset, int whence) {
