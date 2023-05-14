@@ -439,8 +439,9 @@ int PNG_addRGB565Line(PNGIMAGE *pImage, uint16_t *pRGB565, void *pTempLine, int 
     PNGFilter(ucFilter, pOut, pSrc, pImage->ucPrevLine, iStride, iPitch); // filter the current line of image data and store
     memcpy(pImage->ucPrevLine, pSrc, iPitch);
     // Compress the filtered image data
-    if (y == 0) // first block, initialize zlib
+    if (pImage->is_first_row) // first block, initialize zlib
     {
+        pImage->is_first_row = 0;
         PNGStartFile(pImage);
         memset(&pImage->c_stream, 0, sizeof(z_stream));
         pImage->c_stream.zalloc = myalloc; // use internal alloc/free
@@ -685,6 +686,7 @@ int PNG_openRAM(PNGIMAGE *pPNG, uint8_t *pData, int iDataSize)
     pPNG->iTransparent = -1;
     pPNG->pOutput = pData;
     pPNG->iBufferSize = iDataSize;
+    pPNG->is_first_row = 1;
     return PNG_SUCCESS;
 } /* PNG_openRAM() */
 
@@ -692,6 +694,7 @@ int PNG_openFile(PNGIMAGE *pPNG, const char *szFilename, PNG_OPEN_CALLBACK *pfnO
 {
     memset(pPNG, 0, sizeof(PNGIMAGE));
     pPNG->iTransparent = -1;
+    pPNG->is_first_row = 1;
     pPNG->pfnRead = pfnRead;
     pPNG->pfnWrite = pfnWrite;
     pPNG->pfnSeek = pfnSeek;

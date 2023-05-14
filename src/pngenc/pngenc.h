@@ -121,6 +121,7 @@ typedef struct png_image_tag
     int iMemPool; // memory allocated out of memory pool
     int iPitch; // bytes per line
     int iError;
+    int is_first_row;
     PNG_READ_CALLBACK *pfnRead;
     PNG_WRITE_CALLBACK *pfnWrite;
     PNG_SEEK_CALLBACK *pfnSeek;

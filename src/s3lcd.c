@@ -1893,7 +1893,7 @@ STATIC mp_obj_t s3lcd_jpg(size_t n_args, const mp_obj_t *args) {
             self->fp = MP_OBJ_NULL;
         }
     }
-    m_free(self->work);                             // Discard work area
+    m_free(self->work);     // Discard work area
     return mp_const_none;
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_jpg_obj, 4, 5, s3lcd_jpg);
@@ -1928,7 +1928,7 @@ STATIC int out_crop(                                // 1:Ok, 0:Aborted
                 width);
         }
     }
-    return 1;                                       // Continue to decompress
+    return 1;   // Continue to decompress
 }
 
 ///
@@ -2150,13 +2150,18 @@ void pngClose(PNGFILE *pFile) {
 }
 
 //
-// .png_write(file_name)
+// .png_write(file_name{ x, y, width, height})
 //
 // save the framebuffer to a png file using PNGenc from
 // https://github.com/bitbank2/PNGenc
 //
 //  required parameters:
 //  -- filename: the name of the file to save
+//  optional parameters:
+//  -- x: the x coordinate to start saving
+//  -- y: the y coordinate to start saving
+//  -- width: the width of the area to save
+//  -- height: the height of the area to save
 //  returns:
 //  -- file size in bytes
 //
@@ -2168,41 +2173,52 @@ STATIC mp_obj_t s3lcd_png_write(size_t n_args, const mp_obj_t *args) {
     int work_buffer_size = self->width * 3 * 2;
     int rc;
 
-    PNGIMAGE *pPNG = (PNGIMAGE *) m_malloc(sizeof(PNGIMAGE));
-    if (pPNG == NULL) {
-        mp_raise_msg(&mp_type_RuntimeError, MP_ERROR_TEXT("memory allocation failed"));
-    }
-    self->work = pPNG;
+    if (n_args == 2 || n_args == 6) {
+        OPTIONAL_ARG(2, mp_int_t, mp_obj_get_int, x, 0)
+        OPTIONAL_ARG(3, mp_int_t, mp_obj_get_int, y, 0)
+        OPTIONAL_ARG(4, mp_int_t, mp_obj_get_int, width, self->width)
+        OPTIONAL_ARG(5, mp_int_t, mp_obj_get_int, height, self->height)
 
-    self->work_buffer = (uint16_t *) m_malloc(work_buffer_size);
-    if (self->work_buffer == NULL) {
-        mp_raise_msg(&mp_type_RuntimeError, MP_ERROR_TEXT("memory allocation failed"));
-    }
+        if (x >= 0 && x + width <= self->width &&
+            y >= 0 && y + height <= self->height) {
 
-    rc = PNG_openFile(pPNG, filename, pngOpen, pngClose, pngRead, pngWrite, pngSeek);
-    if (rc != PNG_SUCCESS) {
-        mp_raise_msg(&mp_type_RuntimeError, MP_ERROR_TEXT("Error opening output file"));
-    }
+            PNGIMAGE *pPNG = (PNGIMAGE *) m_malloc(sizeof(PNGIMAGE));
+            if (pPNG == NULL) {
+                mp_raise_msg(&mp_type_RuntimeError, MP_ERROR_TEXT("memory allocation failed"));
+            }
+            self->work = pPNG;
 
-    rc = PNG_encodeBegin(pPNG, self->width, self->height, PNG_PIXEL_TRUECOLOR, 24, NULL, 9);
-    if (rc == PNG_SUCCESS) {
-        for (int y=0; y < self->height && rc == PNG_SUCCESS; y++) {
-            rc = PNG_addRGB565Line(
-                pPNG,
-                self->frame_buffer + self->width * y,
-                self->work_buffer,
-                y
-            );
+            self->work_buffer = (uint16_t *) m_malloc(work_buffer_size);
+            if (self->work_buffer == NULL) {
+                mp_raise_msg(&mp_type_RuntimeError, MP_ERROR_TEXT("memory allocation failed"));
+            }
+
+            rc = PNG_openFile(pPNG, filename, pngOpen, pngClose, pngRead, pngWrite, pngSeek);
+            if (rc != PNG_SUCCESS) {
+                mp_raise_msg(&mp_type_RuntimeError, MP_ERROR_TEXT("Error opening output file"));
+            }
+
+            rc = PNG_encodeBegin(pPNG, width, height, PNG_PIXEL_TRUECOLOR, 24, NULL, 9);
+            if (rc == PNG_SUCCESS) {
+                uint16_t *p = self->frame_buffer + x + self->width * y;
+                for (int row = y; row <= y+height && rc == PNG_SUCCESS; row++) {
+                    rc = PNG_addRGB565Line(pPNG, p, self->work_buffer, row-y);
+                    p += self->width;
+                }
+                data_size = PNG_close(pPNG);
+            }
+            m_free(pPNG);
+            self->work = NULL;
+            m_free(self->work_buffer);
+            self->work_buffer = NULL;
         }
-        data_size = PNG_close(pPNG);
+    } else {
+        mp_raise_TypeError(MP_ERROR_TEXT("jpg_write requires either 1 or 5 arguments"));
     }
-    m_free(pPNG);
-    self->work = NULL;
-    m_free(self->work_buffer);
-    self->work_buffer = NULL;
+
     return mp_obj_new_int(data_size);
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_png_write_obj, 2, 2, s3lcd_png_write);
+STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_png_write_obj, 2, 6, s3lcd_png_write);
 
 ///
 /// .polygon_center(polygon)

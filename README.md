@@ -245,9 +245,16 @@ Note: Curly braces `{` and `}` enclose optional parameters and do not imply a Py
 
   Draws a PNG file in the framebuffer with the upper left corner of the image at the given `x` and `y' coordinates. The png may be a filename or a bytes() or bytearray() object. The png will wil be clipped if it is not able to fit fully in the framebuffer. Transparency is supported; see the alien.py program in the examples/png folder.
 
-- `png_write(file_name)`
+- `png_write(file_name{ x, y, width, height})`
 
   Writes the framebuffer to a png file named `file_name` using PNGenc from https://github.com/bitbank2/PNGenc.
+
+  #### optional parameters:
+    - x: the first column of the framebuffer to start writing.
+    - y: the first row of the framebuffer to start writing.
+    - width: the width of the area to write
+    - height: the height of the area to write
+
   Returns file size in bytes.
 
 - `polygon_center(polygon)`
