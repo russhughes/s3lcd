@@ -33,7 +33,7 @@ def main():
         col = width // 2 - LOGO_WIDTH // 2
         row = height // 2 - LOGO_HEIGHT // 2
         xd = 3
-        yd = 3
+        yd = 2
 
         ticks = 1000 // 45
 
@@ -45,7 +45,7 @@ def main():
             last = time.ticks_ms()
             tft.png(alien, col, row)
             tft.show()
-            tft.clear(0)
+            # tft.clear(0)
 
             # Update the position to bounce the bitmap around the screen
             col += xd

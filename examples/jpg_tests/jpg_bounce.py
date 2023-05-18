@@ -33,7 +33,7 @@ def main():
         col = width // 2 - LOGO_WIDTH // 2
         row = height // 2 - LOGO_HEIGHT // 2
         xd = 3
-        yd = 3
+        yd = 2
 
         ticks = 1000 // 45
 
