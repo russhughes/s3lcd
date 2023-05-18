@@ -774,11 +774,7 @@ def start_game():
 
 buttons = tft_buttons.Buttons()
 
-if buttons.name in ["t-display-s3", "t-embed", "t-hmi", "esp32-s3-box"]:
-    left_flipper = buttons.left
-    right_flipper = buttons.right
-
-elif buttons.name == "t-dongle-s3":
+if buttons.name == "t-dongle-s3":
     left_flipper = buttons.button
     right_flipper = buttons.button
     REDRAW_EVERY_FRAME = False
@@ -787,6 +783,9 @@ elif buttons.name == "wt32-sc01-plus":
     left_flipper = buttons.left
     right_flipper = buttons.right
     PRESSED=1
+else:
+    left_flipper = buttons.left
+    right_flipper = buttons.right
 
 # ------------ set up the display ------------
 

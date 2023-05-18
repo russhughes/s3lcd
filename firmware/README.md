@@ -6,6 +6,8 @@ The firmware.bin files have been tested on the devices listed below.
 
 ## S3LCD_8M: No SPIRAM 8M Flash
 
+    - M5STACK ATOM-S3
+
 ## S3LCD_16M: No SPIRAM 16M Flash
 
     - T-Dongle-S3

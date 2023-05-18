@@ -27,6 +27,7 @@ I modified the original driver to add the following features:
   - LilyGo T-Embed
   - LilyGo T-HMI
   - Seeed Studio WT32-SC01 Plus
+  - M5STACK ATOM-S3
 
 ## Pre-compiled firmware
 
