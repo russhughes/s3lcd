@@ -15,3 +15,7 @@ class Buttons:
         self.fire = Pin(15, Pin.IN)
         self.thrust = Pin(16, Pin.IN)
         self.hyper = 0
+
+        # Buttons above the display
+        self.ONOFF = Pin(21, Pin.IN)  # Sends 1 when pressed
+        self.BOT   = Pin(0, Pin.IN)   # Sends 0 when pressed
