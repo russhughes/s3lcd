@@ -1,8 +1,8 @@
-"""ESP32 Box or Box Lite with ili9342c 320x240 display"""
+"""M5STACK CORES3 with ili9342c 320x240 display"""
 
-from machine import Pin, SPI, freq
-import s3lcd
+from machine import freq
 import m5cores3
+import s3lcd
 
 
 TFA = 0
@@ -49,9 +49,10 @@ def config(rotation=0, options=0):
     )
 
     # To use baudrates above 26.6MHz you must use my firmware or modify the micropython
-    # source code to increase the SPI baudrate limit by adding SPI_DEVICE_NO_DUMMY to the
-    # .flag member of the spi_device_interface_config_t struct in the machine_hw_spi_init_internal.c
-    # file.  Not doing so will cause the ESP32 to crash if you use a baudrate that is too high.
+    # source code to increase the SPI baudrate limit by adding SPI_DEVICE_NO_DUMMY to
+    # the .flag member of the spi_device_interface_config_t struct in the
+    # machine_hw_spi_init_internal.c file.  Not doing so will cause the ESP32 to crash
+    # if you use a baudrate that is too high.
 
     bus = s3lcd.SPI_BUS(
         1,

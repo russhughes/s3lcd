@@ -1,6 +1,6 @@
 # input pins for buttons: you will need to change these to match your wiring
 
-from machine import Pin, ADC
+from machine import Pin
 
 
 class Buttons:
