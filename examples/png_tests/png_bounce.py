@@ -45,7 +45,7 @@ def main():
             last = time.ticks_ms()
             tft.png(alien, col, row)
             tft.show()
-            # tft.clear(0)
+            tft.clear(0)
 
             # Update the position to bounce the bitmap around the screen
             col += xd

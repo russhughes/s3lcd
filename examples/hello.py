@@ -43,7 +43,6 @@ def center(using_font, text, fg=s3lcd.WHITE, bg=s3lcd.BLACK):
     Centers the given text on the display.
     """
     length = 1 if isinstance(text, int) else len(text)
-    print(text, length, using_font.WIDTH, using_font.HEIGHT)
     tft.text(
         using_font,
         text,

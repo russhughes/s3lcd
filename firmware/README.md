@@ -31,3 +31,4 @@ The firmware.bin files have been tested on the devices listed below.
 
     - T-Embed
     - WT32-SC01 Plus
+    - M5STACK CORES3

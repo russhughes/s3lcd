@@ -9,7 +9,8 @@ function menu() {
         4) T-HMI
         5) ESP32-S3-BOX or ESP32-S3-BOX-LITE
         6) WT32-SC01 Plus
-        7) M5Stack ATOM-S3
+        7) M5STACK ATOM-S3
+        8) M5STACK CORES3
         0) Quit
 
     Choose an option (0-6): "
@@ -77,7 +78,7 @@ function menu() {
             PROVERBS_FONT="45"
             ;;
 
-        7)  #   M5Stack ATOM-S3
+        7)  #   M5STACK ATOM-S3
 
             FIRMWARE="S3LCD_8M"
             CONFIG="m5stack-atom-s3"
@@ -85,6 +86,16 @@ function menu() {
             TALL_SCREEN="128x128"
             CLOCK_FONT="45"
             PROVERBS_FONT="20"
+            ;;
+
+        8)  #   M5STACK CORES3
+
+            FIRMWARE="S3LCD_QUAD_16M"
+            CONFIG="m5stack-cores3"
+            WIDE_SCREEN="320x240"
+            TALL_SCREEN="240x320"
+            CLOCK_FONT="100"
+            PROVERBS_FONT="45"
             ;;
 
         0)  exit 0

@@ -10,6 +10,7 @@ function run() {
     read -p "Press enter to continue"
 }
 
+# comment out of you dont want to erase and flash firmware
 ./upload-demos.sh
 
 run bitarray.py

@@ -783,6 +783,7 @@ elif buttons.name == "wt32-sc01-plus":
     left_flipper = buttons.left
     right_flipper = buttons.right
     PRESSED=1
+
 else:
     left_flipper = buttons.left
     right_flipper = buttons.right
