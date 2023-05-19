@@ -5,3 +5,4 @@
 ./create_face.py 320 170
 ./create_face.py 320 240
 ./create_face.py 480 320
+./create_face.py 128 128
