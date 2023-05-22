@@ -444,14 +444,14 @@ cp ../../../s3lcd/fonts/vector/scripts.py modules
 Build the MicroPython firmware with the driver and frozen Python files in the modules directory. If you did not add any .py files to the modules directory, you could leave out the FROZEN_MANIFEST and FROZEN_MPY_DIR settings.
 
 ```bash
-make USER_C_MODULES=../../../../s3lcd/s3lcd/micropython.cmake FROZEN_MANIFEST="" FROZEN_MPY_DIR=$UPYDIR/modules
+make USER_C_MODULES=../../../s3lcd/src/micropython.cmake FROZEN_MANIFEST="" FROZEN_MPY_DIR=$UPYDIR/modules
 ```
 
 Erase and flash the firmware to your device. Set PORT= to the ESP32's USB serial port. I could not get the USB serial port to work under the Windows Subsystem (WSL2) for Linux. If you have the same issue, copy the firmware.bin file and use the Windows esptool.py to flash your device.
 
 ```bash
-make USER_C_MODULES=../../../../s3lcd/s3lcd/micropython.cmake PORT=/dev/ttyUSB0 erase
-make USER_C_MODULES=../../../../s3lcd/s3lcd/micropython.cmake PORT=/dev/ttyUSB0 deploy
+make USER_C_MODULES=../../../s3lcd/src/micropython.cmake PORT=/dev/ttyUSB0 erase
+make USER_C_MODULES=../../../s3lcd/src/micropython.cmake PORT=/dev/ttyUSB0 deploy
 ```
 
 The build-GENERIC directory will contain the firmware.bin file. To flash the file, use the python esptool.py utility. You can install the esptool.py utility using pip if needed.
@@ -475,7 +475,7 @@ for ESP32:
 
 And compile the module with the specified USER_C_MODULES dir.
 
-    $ make USER_C_MODULES=../../../../s3lcd/src/micropython.cmake
+    $ make USER_C_MODULES=../../../s3lcd/src/micropython.cmake
 
 ## Thanks go out to:
 
