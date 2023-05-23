@@ -29,6 +29,7 @@ I modified the original driver to add the following features:
   - Seeed Studio WT32-SC01 Plus
   - M5STACK ATOM-S3
   - M5STACK CORES3
+  - BananaPi BPI-Centi-S3
 
 ## Pre-compiled firmware
 

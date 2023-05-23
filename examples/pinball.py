@@ -784,6 +784,11 @@ elif buttons.name == "wt32-sc01-plus":
     right_flipper = buttons.right
     PRESSED=1
 
+elif buttons.name == "bpi-centi-s3":
+    left_flipper = buttons.boot
+    right_flipper = buttons.button
+    PRESSED=1
+
 else:
     left_flipper = buttons.left
     right_flipper = buttons.right

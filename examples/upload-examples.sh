@@ -11,6 +11,7 @@ function menu() {
         6) WT32-SC01 Plus
         7) M5STACK ATOM-S3
         8) M5STACK CORES3
+        9) BPI-Centi-S3
         0) Quit
 
     Choose an option (0-6): "
@@ -94,6 +95,16 @@ function menu() {
             CONFIG="m5stack-cores3"
             WIDE_SCREEN="320x240"
             TALL_SCREEN="240x320"
+            CLOCK_FONT="100"
+            PROVERBS_FONT="45"
+            ;;
+
+        9)  #   BPI-Centi-S3
+
+            FIRMWARE="S3LCD_QUAD_8M"
+            CONFIG="bpi-centi-s3"
+            WIDE_SCREEN="320x170"
+            TARL_SCREEN="170x320"
             CLOCK_FONT="100"
             PROVERBS_FONT="45"
             ;;
