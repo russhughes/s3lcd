@@ -1,7 +1,7 @@
 #!/bin/sh
 
 echo "This script erases, uploads firmware and demos to device, then runs"
-each "each demo. Use CTRL-C to stop the demo, then press return for the next."
+echo "each demo. Use CTRL-C to stop the demo, then press return for the next."
 echo
 
 function run() {
@@ -11,7 +11,7 @@ function run() {
 }
 
 # comment out of you dont want to erase and flash firmware
-./upload-demos.sh
+./upload-examples.sh
 
 run bitarray.py
 run bitmap_fonts.py
