@@ -5,7 +5,7 @@ import s3lcd
 
 TFA = 0
 BFA = 0
-WIDE = 1
+WIDE = 0
 TALL = 0
 
 BACKLIGHT = Pin(10, Pin.OUT)
