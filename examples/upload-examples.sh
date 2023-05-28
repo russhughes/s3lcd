@@ -12,6 +12,7 @@ function menu() {
         7) M5STACK ATOM-S3
         8) M5STACK CORES3
         9) BPI-Centi-S3
+       10) T-QT Pro
         0) Quit
 
     Choose an option (0-6): "
@@ -107,6 +108,16 @@ function menu() {
             TARL_SCREEN="170x320"
             CLOCK_FONT="100"
             PROVERBS_FONT="45"
+            ;;
+
+        10) #  LilyGo T-Qt Pro
+
+            FIRMWARE="S3LCD_QUAD_4M"
+            CONFIG="t-qt-pro"
+            WIDE_SCREEN="128x128"
+            TALL_SCREEN="128x128"
+            CLOCK_FONT="45"
+            PROVERBS_FONT="20"
             ;;
 
         0)  exit 0
