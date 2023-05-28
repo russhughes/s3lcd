@@ -63,7 +63,7 @@ def main():
         for color in [s3lcd.RED, s3lcd.GREEN, s3lcd.BLUE]:
             tft.fill(color)
             tft.rect(0, 0, tft.width(), tft.height(), complementary_color(color))
-            center(font, b'\xAEHello\xAF', s3lcd.WHITE, color)
+            center(font, 'Hello', s3lcd.WHITE, color)
             tft.show()
             time.sleep(1)
 
