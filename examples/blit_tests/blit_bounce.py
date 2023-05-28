@@ -33,7 +33,7 @@ def main():
         col = width // 2 - LOGO_WIDTH // 2
         row = height // 2 - LOGO_HEIGHT // 2
         xd = 1
-        yd = 1
+        yd = 2
 
         bitmap, bitmap_width, bitmap_height = tft.jpg_decode("logo-64x64.jpg")
         ticks = 1000 // 45
