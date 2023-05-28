@@ -26,6 +26,7 @@ I modified the original driver to add the following features:
   - LilyGo T-Dongle-S3
   - LilyGo T-Embed
   - LilyGo T-HMI
+  - LilyGo T-QT Pro
   - Seeed Studio WT32-SC01 Plus
   - M5STACK ATOM-S3
   - M5STACK CORES3

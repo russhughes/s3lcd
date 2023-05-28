@@ -60,7 +60,13 @@ import tft_buttons
 
 FLIPPER_SPEED = const(12)  # flipper speed
 GRAVITY = -0.8  # gravity (negative y direction)
-FPS = const(20)  # frames per second
+
+# If the ball passes thru your flippers you may need to chage
+# the FPS value. You can uncomment the print statement in the
+# start_game() method to see how many frames per second your
+# device is running.
+
+FPS = 20  # frames per second
 
 BALL_SLOW = const(2)  # launch speed for slow ball
 BALL_FAST = const(3)  # launch speed for fast ball
@@ -788,6 +794,11 @@ elif buttons.name == "bpi-centi-s3":
     left_flipper = buttons.boot
     right_flipper = buttons.button
     PRESSED=1
+
+elif buttons.name == "t-qt-pro":
+    left_flipper = buttons.left
+    right_flipper = buttons.right
+    FPS = 42
 
 else:
     left_flipper = buttons.left

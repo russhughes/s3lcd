@@ -25,6 +25,8 @@ The firmware.bin files have been tested on the devices listed below.
 
 ## S3LCD_QUAD_4M: Quad SPIRAM 4M Flash
 
+    - T-QT Pro
+
 ## S3LCD_QUAD_8M: Quad SPIRAM 8M Flash
 
 ## S3LCD_QUAD_16M: Quad SPIRAM 16M Flash
