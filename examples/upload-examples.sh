@@ -35,7 +35,7 @@ function menu() {
             FIRMWARE="S3LCD_OCT_16M"
             CONFIG="t-display-s3"
             WIDE_SCREEN="320x170"
-            TARL_SCREEN="170x320"
+            TALL_SCREEN="170x320"
             CLOCK_FONT="100"
             PROVERBS_FONT="45"
             ;;
