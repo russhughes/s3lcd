@@ -1448,7 +1448,9 @@ STATIC mp_obj_t s3lcd_init(mp_obj_t self_in) {
             .lcd_param_bits = config->lcd_param_bits,
             .on_color_trans_done = lcd_panel_done,
             .user_ctx = self,
+#if ESP_IDF_VERSION < ESP_IDF_VERSION_VAL(5, 0, 0)
             .flags.dc_as_cmd_phase = config->flags.dc_as_cmd_phase,
+#endif
             .flags.dc_low_on_data = config->flags.dc_low_on_data,
             .flags.octal_mode =config->flags.octal_mode,
             .flags.lsb_first = config->flags.lsb_first
@@ -1471,6 +1473,9 @@ STATIC mp_obj_t s3lcd_init(mp_obj_t self_in) {
     esp_lcd_panel_reset(panel_handle);
     if (self->custom_init == MP_OBJ_NULL) {
         esp_lcd_panel_init(panel_handle);
+#if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0)
+        esp_lcd_panel_disp_on_off(panel_handle,true); //switch lcd on, not longer a part of init
+#endif
     } else {
         custom_init(self);
     }

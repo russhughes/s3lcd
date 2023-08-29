@@ -1,9 +1,4 @@
- ports/esp32/boards/GENERIC_S3/mpconfigboard.h | 10 ++++++++++
- ports/esp32/machine_sdcard.c                  | 18 ++++++++++++++++--
- 2 files changed, 26 insertions(+), 2 deletions(-)
-
 diff --git a/ports/esp32/boards/GENERIC_S3/mpconfigboard.h b/ports/esp32/boards/GENERIC_S3/mpconfigboard.h
-index b8f5fb256..539fd27da 100644
 --- a/ports/esp32/boards/GENERIC_S3/mpconfigboard.h
 +++ b/ports/esp32/boards/GENERIC_S3/mpconfigboard.h
 @@ -8,3 +8,13 @@
@@ -22,7 +17,6 @@ index b8f5fb256..539fd27da 100644
 +#define MICROPY_HW_SDMMC_CMD                (GPIO_NUM_16)
 \ No newline at end of file
 diff --git a/ports/esp32/machine_sdcard.c b/ports/esp32/machine_sdcard.c
-index 5b495f849..471d9551a 100644
 --- a/ports/esp32/machine_sdcard.c
 +++ b/ports/esp32/machine_sdcard.c
 @@ -38,7 +38,7 @@
@@ -56,3 +50,17 @@ index 5b495f849..471d9551a 100644
          // Stronger external pull-ups are still needed but apparently
          // it is a good idea to set the internal pull-ups anyway.
          // slot_config.flags = SDMMC_SLOT_FLAG_INTERNAL_PULLUP;
+diff --git a/ports/esp32/boards/GENERIC_S3/sdkconfig.board b/ports/esp32/boards/GENERIC_S3/sdkconfig.board
+--- sdkconfig.board
++++ sdkconfig.board
+@@ -3,7 +3,7 @@
+ CONFIG_ESPTOOLPY_AFTER_NORESET=y
+
+ CONFIG_ESPTOOLPY_FLASHSIZE_4MB=
+-CONFIG_ESPTOOLPY_FLASHSIZE_8MB=
+-CONFIG_ESPTOOLPY_FLASHSIZE_16MB=y
++CONFIG_ESPTOOLPY_FLASHSIZE_8MB=y
++CONFIG_ESPTOOLPY_FLASHSIZE_16MB=
+ CONFIG_PARTITION_TABLE_CUSTOM=y
+-CONFIG_PARTITION_TABLE_CUSTOM_FILENAME="partitions-16MiB.csv"
++CONFIG_PARTITION_TABLE_CUSTOM_FILENAME="partitions-8MiB.csv"

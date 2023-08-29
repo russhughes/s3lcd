@@ -17,8 +17,13 @@ STATIC void s3lcd_spi_bus_print(const mp_print_t *print, mp_obj_t self_in, mp_pr
     (void) kind;
     s3lcd_spi_bus_obj_t *self = MP_OBJ_TO_PTR(self_in);
     mp_printf(print, "<SPI %s, sck=%d, mosi=%d, dc=%d, cs=%d, spi_mode=%d, pclk=%d, lcd_cmd_bits=%d, "
+#if ESP_IDF_VERSION < ESP_IDF_VERSION_VAL(5, 0, 0)
                      "lcd_param_bits=%d, dc_as_cmd_phase=%d, dc_low_on_data=%d, "
+#else
+                     "lcd_param_bits=%d, dc_low_on_data=%d, "
+#endif
                      "octal_mode=%d, lsb_first=%d, swap_color_bytes=%d>",
+
         self->name,
         self->sclk_io_num,
         self->mosi_io_num,
@@ -28,7 +33,9 @@ STATIC void s3lcd_spi_bus_print(const mp_print_t *print, mp_obj_t self_in, mp_pr
         self->pclk_hz,
         self->lcd_cmd_bits,
         self->lcd_param_bits,
+#if ESP_IDF_VERSION < ESP_IDF_VERSION_VAL(5, 0, 0)
         self->flags.dc_as_cmd_phase,
+#endif
         self->flags.dc_low_on_data,
         self->flags.octal_mode,
         self->flags.lsb_first,
@@ -68,7 +75,9 @@ STATIC mp_obj_t s3lcd_spi_bus_make_new(const mp_obj_type_t *type, size_t n_args,
         ARG_pclk_hz,            // Frequency of pixel clock
         ARG_lcd_cmd_bits,       // Bit-width of LCD command
         ARG_lcd_param_bits,     // Bit-width of LCD parameter
+#if ESP_IDF_VERSION < ESP_IDF_VERSION_VAL(5, 0, 0)
         ARG_dc_as_cmd_phase,    // D/C line value is encoded into SPI transaction command phase
+#endif
         ARG_dc_low_on_data,     // If this flag is enabled, DC line = 0 means transfer data, DC line = 1 means transfer command; vice versa
         ARG_octal_mode,         // transmit with octal mode (8 data lines), this mode is used to simulate Intel 8080 timing
         ARG_lsb_first,          // transmit LSB bit first
@@ -86,7 +95,9 @@ STATIC mp_obj_t s3lcd_spi_bus_make_new(const mp_obj_type_t *type, size_t n_args,
         { MP_QSTR_pclk,             MP_ARG_INT  | MP_ARG_KW_ONLY, {.u_int = 20000000 } },
         { MP_QSTR_lcd_cmd_bits,     MP_ARG_INT  | MP_ARG_KW_ONLY, {.u_int = 8        } },
         { MP_QSTR_lcd_param_bits,   MP_ARG_INT  | MP_ARG_KW_ONLY, {.u_int = 8        } },
+#if ESP_IDF_VERSION < ESP_IDF_VERSION_VAL(5, 0, 0)
         { MP_QSTR_dc_as_cmd_phase,  MP_ARG_INT  | MP_ARG_KW_ONLY, {.u_int = 0        } },
+#endif
         { MP_QSTR_dc_low_on_data,   MP_ARG_INT  | MP_ARG_KW_ONLY, {.u_int = 0        } },
         { MP_QSTR_octal_mode,       MP_ARG_BOOL | MP_ARG_KW_ONLY, {.u_bool = false   } },
         { MP_QSTR_lsb_first,        MP_ARG_BOOL | MP_ARG_KW_ONLY, {.u_bool = false   } },
@@ -109,7 +120,9 @@ STATIC mp_obj_t s3lcd_spi_bus_make_new(const mp_obj_type_t *type, size_t n_args,
     self->pclk_hz = args[ARG_pclk_hz].u_int;
     self->lcd_cmd_bits = args[ARG_lcd_cmd_bits].u_int;
     self->lcd_param_bits = args[ARG_lcd_param_bits].u_int;
+#if ESP_IDF_VERSION < ESP_IDF_VERSION_VAL(5, 0, 0)
     self->flags.dc_as_cmd_phase = args[ARG_dc_as_cmd_phase].u_int;
+#endif
     self->flags.dc_low_on_data = args[ARG_dc_low_on_data].u_int;
     self->flags.octal_mode = args[ARG_octal_mode].u_int;
     self->flags.lsb_first = args[ARG_lsb_first].u_bool;
