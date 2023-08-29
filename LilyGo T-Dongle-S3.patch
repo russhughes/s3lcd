@@ -1,0 +1,58 @@
+ ports/esp32/boards/GENERIC_S3/mpconfigboard.h | 10 ++++++++++
+ ports/esp32/machine_sdcard.c                  | 18 ++++++++++++++++--
+ 2 files changed, 26 insertions(+), 2 deletions(-)
+
+diff --git a/ports/esp32/boards/GENERIC_S3/mpconfigboard.h b/ports/esp32/boards/GENERIC_S3/mpconfigboard.h
+index b8f5fb256..539fd27da 100644
+--- a/ports/esp32/boards/GENERIC_S3/mpconfigboard.h
++++ b/ports/esp32/boards/GENERIC_S3/mpconfigboard.h
+@@ -8,3 +8,13 @@
+ 
+ #define MICROPY_HW_I2C0_SCL                 (9)
+ #define MICROPY_HW_I2C0_SDA                 (8)
++#define MICROPY_HW_ENABLE_SDCARD            (1)
++#define MICROPY_HW_SDCARD_SDMMC             (1)
++#define MICROPY_HW_SDCARD_SDSPI             (0)
++#define MICROPY_HW_SDCARD_BUS_WIDTH         (4)
++#define MICROPY_HW_SDMMC_D0                 (GPIO_NUM_14)
++#define MICROPY_HW_SDMMC_D1                 (GPIO_NUM_17)
++#define MICROPY_HW_SDMMC_D2                 (GPIO_NUM_21)
++#define MICROPY_HW_SDMMC_D3                 (GPIO_NUM_18)
++#define MICROPY_HW_SDMMC_CK                 (GPIO_NUM_12)
++#define MICROPY_HW_SDMMC_CMD                (GPIO_NUM_16)
+\ No newline at end of file
+diff --git a/ports/esp32/machine_sdcard.c b/ports/esp32/machine_sdcard.c
+index 5b495f849..471d9551a 100644
+--- a/ports/esp32/machine_sdcard.c
++++ b/ports/esp32/machine_sdcard.c
+@@ -38,7 +38,7 @@
+ #include "sdmmc_cmd.h"
+ #include "esp_log.h"
+ 
+ #define DEBUG 0
+ #if DEBUG
+ #define DEBUG_printf(...) ESP_LOGI("modsdcard", __VA_ARGS__)
+ #else
+@@ -246,7 +246,21 @@ STATIC mp_obj_t machine_sdcard_make_new(const mp_obj_type_t *type, size_t n_args
+         // SD/MMC interface
+         DEBUG_printf("  Setting up SDMMC slot configuration");
+         sdmmc_slot_config_t slot_config = SDMMC_SLOT_CONFIG_DEFAULT();
+-
++#ifdef MICROPY_HW_SDCARD_SDMMC
++		slot_config.clk = MICROPY_HW_SDMMC_CK;
++		slot_config.cmd = MICROPY_HW_SDMMC_CMD;
++		slot_config.d0 = MICROPY_HW_SDMMC_D0;
++		slot_config.d1 = MICROPY_HW_SDMMC_D1;
++		slot_config.d2 = MICROPY_HW_SDMMC_D2;
++		slot_config.d3 = MICROPY_HW_SDMMC_D3;
++		slot_config.width = 4; // SDMMC_SLOT_WIDTH_DEFAULT,
++		slot_config.flags = SDMMC_SLOT_FLAG_INTERNAL_PULLUP;
++		gpio_set_pull_mode((gpio_num_t)MICROPY_HW_SDMMC_CMD, GPIO_PULLUP_ONLY); // CMD, needed in 4- and 1- line modes
++		gpio_set_pull_mode((gpio_num_t)MICROPY_HW_SDMMC_D0, GPIO_PULLUP_ONLY);  // D0, needed in 4- and 1-line modes
++		gpio_set_pull_mode((gpio_num_t)MICROPY_HW_SDMMC_D1, GPIO_PULLUP_ONLY);  // D1, needed in 4-line mode only
++		gpio_set_pull_mode((gpio_num_t)MICROPY_HW_SDMMC_D2, GPIO_PULLUP_ONLY);  // D2, needed in 4-line mode only
++		gpio_set_pull_mode((gpio_num_t)MICROPY_HW_SDMMC_D3, GPIO_PULLUP_ONLY);  // D3, needed in 4- and 1-line modes
++#endif
+         // Stronger external pull-ups are still needed but apparently
+         // it is a good idea to set the internal pull-ups anyway.
+         // slot_config.flags = SDMMC_SLOT_FLAG_INTERNAL_PULLUP;
