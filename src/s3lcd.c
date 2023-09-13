@@ -1384,6 +1384,7 @@ STATIC mp_obj_t s3lcd_init(mp_obj_t self_in) {
         esp_lcd_i80_bus_config_t bus_config = {
             .dc_gpio_num = config->dc_gpio_num,
             .wr_gpio_num = config->wr_gpio_num,
+            .clk_src = LCD_CLK_SRC_DEFAULT,
             .data_gpio_nums = {
                 config->data_gpio_nums[0],
                 config->data_gpio_nums[1],
