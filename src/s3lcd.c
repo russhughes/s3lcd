@@ -1384,7 +1384,7 @@ STATIC mp_obj_t s3lcd_init(mp_obj_t self_in) {
         esp_lcd_i80_bus_config_t bus_config = {
             .dc_gpio_num = config->dc_gpio_num,
             .wr_gpio_num = config->wr_gpio_num,
-            .clk_src = LCD_CLK_SRC_DEFAULT,
+            .clk_src = LCD_CLK_SRC_PLL160M, // same as default in IDF5 and 0 in the enum of IDF4.4
             .data_gpio_nums = {
                 config->data_gpio_nums[0],
                 config->data_gpio_nums[1],
