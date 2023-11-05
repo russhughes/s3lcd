@@ -42,7 +42,6 @@
 #include "py/runtime.h"
 #include "py/builtin.h"
 #include "py/mphal.h"
-#include "extmod/machine_spi.h"
 #include "mpfile.h"
 
 #include "s3lcd.h"
