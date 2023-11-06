@@ -2805,6 +2805,7 @@ mp_obj_t s3lcd_make_new(const mp_obj_type_t *type,
         {MP_QSTR_custom_init, MP_ARG_KW_ONLY | MP_ARG_OBJ, {.u_obj = MP_OBJ_NULL}},
         {MP_QSTR_color_space, MP_ARG_INT | MP_ARG_KW_ONLY, {.u_int = ESP_LCD_COLOR_SPACE_RGB}},
         {MP_QSTR_inversion_mode, MP_ARG_BOOL | MP_ARG_KW_ONLY, {.u_bool = true}},
+        {MP_QSTR_idle_mode, MP_ARG_BOOL | MP_ARG_KW_ONLY, {.u_bool = true}},
         {MP_QSTR_dma_rows, MP_ARG_INT | MP_ARG_KW_ONLY, {.u_int = 16}},
         {MP_QSTR_options, MP_ARG_INT | MP_ARG_KW_ONLY, {.u_int = 0}},
     };
