@@ -32,6 +32,8 @@
 // ST7796 Commands
 #define ST7796_VSCRDEF 0x33
 #define ST7796_VSCSAD  0x37
+#define ST7789_IDLEOFF 0x38
+#define ST7796_IDLEON  0x39
 
 // Color definitions
 #define BLACK   0x0000
