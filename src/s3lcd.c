@@ -376,9 +376,9 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_2(s3lcd_inversion_mode_obj, s3lcd_inversion_mode)
 STATIC mp_obj_t s3lcd_idle_mode(mp_obj_t self_in, mp_obj_t value) {
     s3lcd_obj_t *self = MP_OBJ_TO_PTR(self_in);
     if(mp_obj_is_true(value))
-        esp_lcd_panel_io_tx_param(io, ST7789_IDLEON, NULL, 0);
+        esp_lcd_panel_io_tx_param(self->io_handle, ST7796_IDLEON, NULL, 0);
     else
-        esp_lcd_panel_io_tx_param(io, ST7789_IDLEOFF, NULL, 0)
+        esp_lcd_panel_io_tx_param(self->io_handle, ST7796_IDLEOFF, NULL, 0);
     return mp_const_none;
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_2(s3lcd_idle_mode_obj, s3lcd_idle_mode);
