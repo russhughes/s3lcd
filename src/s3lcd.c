@@ -373,15 +373,15 @@ STATIC mp_obj_t s3lcd_inversion_mode(mp_obj_t self_in, mp_obj_t value) {
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_2(s3lcd_inversion_mode_obj, s3lcd_inversion_mode);
 
-STATIC mp_obj_t s3lcd_inversion_mode(mp_obj_t self_in, mp_obj_t value) {
+STATIC mp_obj_t s3lcd_idle_mode(mp_obj_t self_in, mp_obj_t value) {
     s3lcd_obj_t *self = MP_OBJ_TO_PTR(self_in);
     if(mp_obj_is_true(value))
-        esp_lcd_panel_io_tx_param(io, LCD_CMD_IDLE, NULL, 0);
+        esp_lcd_panel_io_tx_param(io, ST7789_IDLEON, NULL, 0);
     else
-        esp_lcd_panel_io_tx_param(io, LCD_CMD_IDLEOFF << 8, NULL, 0)
+        esp_lcd_panel_io_tx_param(io, ST7789_IDLEOFF, NULL, 0)
     return mp_const_none;
 }
-
+STATIC MP_DEFINE_CONST_FUN_OBJ_2(s3lcd_idle_mode_obj, s3lcd_idle_mode);
 
 ///
 /// .fill_rect(x, y, w, h{, color, alpha})
@@ -2688,6 +2688,7 @@ STATIC const mp_rom_map_elem_t s3lcd_locals_dict_table[] = {
     {MP_ROM_QSTR(MP_QSTR_write_len), MP_ROM_PTR(&s3lcd_write_len_obj)},
     {MP_ROM_QSTR(MP_QSTR_reset), MP_ROM_PTR(&s3lcd_reset_obj)},
     {MP_ROM_QSTR(MP_QSTR_inversion_mode), MP_ROM_PTR(&s3lcd_inversion_mode_obj)},
+    {MP_ROM_QSTR(MP_QSTR_idle_mode), MP_ROM_PTR(&s3lcd_idle_mode_obj)},
     {MP_ROM_QSTR(MP_QSTR_map_bitarray_to_rgb565), MP_ROM_PTR(&s3lcd_map_bitarray_to_rgb565_obj)},
     {MP_ROM_QSTR(MP_QSTR_init), MP_ROM_PTR(&s3lcd_init_obj)},
     {MP_ROM_QSTR(MP_QSTR_pixel), MP_ROM_PTR(&s3lcd_pixel_obj)},
@@ -2720,8 +2721,7 @@ STATIC const mp_rom_map_elem_t s3lcd_locals_dict_table[] = {
     {MP_ROM_QSTR(MP_QSTR_fill_polygon), MP_ROM_PTR(&s3lcd_fill_polygon_obj)},
     {MP_ROM_QSTR(MP_QSTR_show), MP_ROM_PTR(&s3lcd_show_obj)},
     {MP_ROM_QSTR(MP_QSTR_deinit), MP_ROM_PTR(&s3lcd_deinit_obj)},
-};
-STATIC MP_DEFINE_CONST_DICT(s3lcd_locals_dict, s3lcd_locals_dict_table);
+};STATIC MP_DEFINE_CONST_DICT(s3lcd_locals_dict, s3lcd_locals_dict_table);
 /* methods end */
 
 #if MICROPY_OBJ_TYPE_REPR == MICROPY_OBJ_TYPE_REPR_SLOT_INDEX
