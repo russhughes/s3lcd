@@ -373,6 +373,16 @@ STATIC mp_obj_t s3lcd_inversion_mode(mp_obj_t self_in, mp_obj_t value) {
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_2(s3lcd_inversion_mode_obj, s3lcd_inversion_mode);
 
+STATIC mp_obj_t s3lcd_inversion_mode(mp_obj_t self_in, mp_obj_t value) {
+    s3lcd_obj_t *self = MP_OBJ_TO_PTR(self_in);
+    if(mp_obj_is_true(value))
+        esp_lcd_panel_io_tx_param(io, LCD_CMD_IDLE, NULL, 0);
+    else
+        esp_lcd_panel_io_tx_param(io, LCD_CMD_IDLEOFF << 8, NULL, 0)
+    return mp_const_none;
+}
+
+
 ///
 /// .fill_rect(x, y, w, h{, color, alpha})
 /// Fill a rectangle with the given color.
