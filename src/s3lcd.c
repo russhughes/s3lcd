@@ -374,6 +374,23 @@ STATIC mp_obj_t s3lcd_inversion_mode(mp_obj_t self_in, mp_obj_t value) {
 STATIC MP_DEFINE_CONST_FUN_OBJ_2(s3lcd_inversion_mode_obj, s3lcd_inversion_mode);
 
 ///
+/// .idle_mode(value)
+/// Set idle mode
+/// required parameters:
+/// -- value: True to enable idle mode, False to idle.
+///
+
+STATIC mp_obj_t s3lcd_idle_mode(mp_obj_t self_in, mp_obj_t value) {
+    s3lcd_obj_t *self = MP_OBJ_TO_PTR(self_in);
+    if(mp_obj_is_true(value))
+        esp_lcd_panel_io_tx_param(self->io_handle, ST7796_IDLEON, NULL, 0);
+    else
+        esp_lcd_panel_io_tx_param(self->io_handle, ST7796_IDLEOFF, NULL, 0);
+    return mp_const_none;
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_2(s3lcd_idle_mode_obj, s3lcd_idle_mode);
+
+///
 /// .fill_rect(x, y, w, h{, color, alpha})
 /// Fill a rectangle with the given color.
 /// required parameters:
@@ -2678,6 +2695,7 @@ STATIC const mp_rom_map_elem_t s3lcd_locals_dict_table[] = {
     {MP_ROM_QSTR(MP_QSTR_write_len), MP_ROM_PTR(&s3lcd_write_len_obj)},
     {MP_ROM_QSTR(MP_QSTR_reset), MP_ROM_PTR(&s3lcd_reset_obj)},
     {MP_ROM_QSTR(MP_QSTR_inversion_mode), MP_ROM_PTR(&s3lcd_inversion_mode_obj)},
+    {MP_ROM_QSTR(MP_QSTR_idle_mode), MP_ROM_PTR(&s3lcd_idle_mode_obj)},
     {MP_ROM_QSTR(MP_QSTR_map_bitarray_to_rgb565), MP_ROM_PTR(&s3lcd_map_bitarray_to_rgb565_obj)},
     {MP_ROM_QSTR(MP_QSTR_init), MP_ROM_PTR(&s3lcd_init_obj)},
     {MP_ROM_QSTR(MP_QSTR_pixel), MP_ROM_PTR(&s3lcd_pixel_obj)},
@@ -2795,6 +2813,7 @@ mp_obj_t s3lcd_make_new(const mp_obj_type_t *type,
         {MP_QSTR_custom_init, MP_ARG_KW_ONLY | MP_ARG_OBJ, {.u_obj = MP_OBJ_NULL}},
         {MP_QSTR_color_space, MP_ARG_INT | MP_ARG_KW_ONLY, {.u_int = ESP_LCD_COLOR_SPACE_RGB}},
         {MP_QSTR_inversion_mode, MP_ARG_BOOL | MP_ARG_KW_ONLY, {.u_bool = true}},
+        {MP_QSTR_idle_mode, MP_ARG_BOOL | MP_ARG_KW_ONLY, {.u_bool = true}},
         {MP_QSTR_dma_rows, MP_ARG_INT | MP_ARG_KW_ONLY, {.u_int = 16}},
         {MP_QSTR_options, MP_ARG_INT | MP_ARG_KW_ONLY, {.u_int = 0}},
     };
