@@ -358,126 +358,94 @@ The `vscsad` method sets the (VSSA) Vertical Scroll Start Address. The VSSA sets
   Convert a `bitarray` to the rgb565 color `buffer` suitable for blitting. Bit
   1 in `bitarray` is a pixel with `color` and 0 - with `bg_color`.
 
-# Setup MicroPython Build Environment in Ubuntu 20.04.2
 
-See the MicroPython
-[README.md](https://github.com/micropython/micropython/blob/master/ports/esp32/README.md#setting-up-esp-idf-and-the-build-environment)
-if you run into any build issues not directly related to the driver. The recommended MicroPython build instructions may have changed.
+# Building the firmware
 
-Update and upgrade Ubuntu using apt-get if you are using a new install of Ubuntu or the Windows Subsystem for Linux.
+See the MicroPython [Getting Started](https://docs.micropython.org/en/latest/develop/gettingstarted.html)
+page for more detailed information on building the MicroPython firmware.
 
-```bash
-sudo apt-get -y update
-sudo apt-get -y upgrade
+## Clone the Repositories
+
+
+```
+$ git clone git@github.com:micropython/micropython.git
+$ git clone https://github.com/russhughes/s3lcd.git
 ```
 
-Use apt-get to install the required build tools.
+Compile the cross compiler if you haven't already
 
-```bash
-sudo apt-get -y install build-essential libffi-dev git pkg-config cmake virtualenv python3-pip python3-virtualenv
+```
+$ make -C micropython/mpy-cross
 ```
 
-### Install a compatible esp-idf SDK
+## ESP32 MicroPython 1.14 thru 1.19
 
-The MicroPython README.md states: "The ESP-IDF changes quickly, and MicroPython only supports certain versions. I have had good luck using IDF v4.4.4
+Change to the ESP32 port directory
 
-Clone the esp-idf SDK repo -- this usually takes several minutes.
-
-```bash
-git clone -b v4.4.4 --recursive https://github.com/espressif/esp-idf.git
-cd esp-idf/
-git pull
+```
+$ cd micropython/ports/esp32
 ```
 
-If you already have a copy of the IDF, you can checkout a version compatible with MicroPython and update the submodules using:
+Compile the module with specified USER_C_MODULES dir
 
-```bash
-$ cd esp-idf
-$ git checkout v4.4.4
-$ git submodule update --init --recursive
+```
+$ make USER_C_MODULES=../../../../s3lcd/src/micropython.cmake clean submodules all
 ```
 
-Install the esp-idf SDK.
+Erase the target device if this is the first time uploading this
+firmware
 
-```bash
-./install.sh
+```
+$ make USER_C_MODULES=../../../../s3lcd/src/micropython.cmake erase
 ```
 
-Source the esp-idf export.sh script to set the required environment variables. You must source the file and not run it using ./export.sh. You will need to source this file before compiling MicroPython.
+Upload the new firmware
 
-```bash
-source export.sh
-cd ..
+```
+$ make USER_C_MODULES=../../../../s3lcd/src/micropython.cmake deploy
 ```
 
-Clone the MicroPython repo.
+## ESP32 MicroPython 1.20 and later
 
-```bash
-git clone https://github.com/micropython/micropython.git
+
+Change to the ESP32 port directory, and build the firmware
+
+```
+$ cd micropython/ports/esp32
+
+$ make \
+    BOARD=ESP32_GENERIC \
+    BOARD_VARIANT=SPIRAM \
+    USER_C_MODULES=../../../../s3lcd/src/micropython.cmake \
+    FROZEN_MANIFEST=../../../../s3lcd/manifest.py \
+    clean submodules all
 ```
 
-Clone the  driver repo.
+Erase the flash and deploy on your device
 
-```bash
-git clone https://github.com/russhughes/s3lcd.git
+```
+$ make \
+    BOARD=ESP32_GENERIC \
+    BOARD_VARIANT=SPIRAM \
+    USER_C_MODULES=../../../../s3lcd/src/micropython.cmake \
+    FROZEN_MANIFEST=../../../../s3lcd/manifest.py \
+    erase deploy
 ```
 
-Update the git submodules and compile the MicroPython cross-compiler
+## RP2040 MicroPython 1.20 and later
 
-```bash
-cd micropython/
-git submodule update --init
-cd mpy-cross/
-make
-cd ..
-cd ports/esp32
+Change to the RP2 port directory, and build the firmware
+
+```
+$ cd micropython/ports/rp2
+$ make \
+    BOARD=RPI_PICO \
+    FROZEN_MANIFEST=../../../../gc9a01c/manifest.py \
+    USER_C_MODULES=../../../gc9a01c/src/micropython.cmake \
+    clean submodules all
 ```
 
-Copy any .py files you want to include in the firmware as frozen Python modules to the modules subdirectory in ports/esp32. Be aware that there is a limit to the flash space available. You will know you have exceeded this limit if you receive an error message saying the code won't fit in the partition or if your firmware continuously reboots with an error.
-
-For example:
-
-```bash
-cp ../../../s3lcd/fonts/bitmap/vga1_16x16.py modules
-cp ../../../s3lcd/fonts/truetype/NotoSans_32.py modules
-cp ../../../s3lcd/fonts/vector/scripts.py modules
-```
-
-Build the MicroPython firmware with the driver and frozen Python files in the modules directory. If you did not add any .py files to the modules directory, you could leave out the FROZEN_MANIFEST and FROZEN_MPY_DIR settings.
-
-```bash
-make USER_C_MODULES=../../../s3lcd/src/micropython.cmake FROZEN_MANIFEST="" FROZEN_MPY_DIR=$UPYDIR/modules
-```
-
-Erase and flash the firmware to your device. Set PORT= to the ESP32's USB serial port. I could not get the USB serial port to work under the Windows Subsystem (WSL2) for Linux. If you have the same issue, copy the firmware.bin file and use the Windows esptool.py to flash your device.
-
-```bash
-make USER_C_MODULES=../../../s3lcd/src/micropython.cmake PORT=/dev/ttyUSB0 erase
-make USER_C_MODULES=../../../s3lcd/src/micropython.cmake PORT=/dev/ttyUSB0 deploy
-```
-
-The build-GENERIC directory will contain the firmware.bin file. To flash the file, use the python esptool.py utility. You can install the esptool.py utility using pip if needed.
-
-
-```bash
-pip3 install esptool
-```
-
-Set PORT= to the ESP32's USB serial port
-
-```bash
-esptool.py --port COM3 erase_flash
-esptool.py --chip esp32 --port COM3 write_flash -z 0x1000 firmware.bin
-```
-## CMake building instructions for MicroPython 1.14 and later
-
-for ESP32:
-
-    $ cd micropython/ports/esp32
-
-And compile the module with the specified USER_C_MODULES dir.
-
-    $ make USER_C_MODULES=../../../s3lcd/src/micropython.cmake
+Flash the firmware.uf2 file from the build-${BOARD} directory to your device.
 
 ## Thanks go out to:
 
