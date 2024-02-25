@@ -22,7 +22,7 @@ function menu() {
 
         1)  #   T-Dongle-S3
 
-            FIRMWARE="S3LCD_16M"
+            FIRMWARE="GENERIC_S3_16M"
             CONFIG="t-dongle-s3"
             WIDE_SCREEN="160x80"
             TALL_SCREEN="80x160"
@@ -32,7 +32,7 @@ function menu() {
 
         2)  #   T-Display-S3
 
-            FIRMWARE="S3LCD_OCT_16M"
+            FIRMWARE="GENERIC_S3_OCT_16M"
             CONFIG="t-display-s3"
             WIDE_SCREEN="320x170"
             TALL_SCREEN="170x320"
@@ -42,7 +42,7 @@ function menu() {
 
         3)  #   T-Embed
 
-            FIRMWARE="S3LCD_OCT_16M"
+            FIRMWARE="GENERIC_S3_OCT_16M"
             CONFIG="t-embed"
             WIDE_SCREEN="320x170"
             TALL_SCREEN="170x320"
@@ -52,7 +52,7 @@ function menu() {
 
         4)  #   T-HMI
 
-            FIRMWARE="S3LCD_OCT_16M"
+            FIRMWARE="GENERIC_S3_OCT_16M"
             CONFIG="t-hmi"
             WIDE_SCREEN="320x240"
             TALL_SCREEN="240x320"
@@ -62,7 +62,7 @@ function menu() {
 
         5)  #   ESP32-S3-BOX or ESP32-S3-BOX-LITE
 
-            FIRMWARE="S3LCD_OCT_16M"
+            FIRMWARE="GENERIC_S3_OCT_16M"
             CONFIG="esp32_s3_box"
             WIDE_SCREEN="320x240"
             TARL_SCREEN="240x320"
@@ -72,7 +72,7 @@ function menu() {
 
         6)  #   WT32-SC01 Plus
 
-            FIRMWARE="S3LCD_QUAD_16M"
+            FIRMWARE="GENERIC_S3_16M"
             CONFIG="wt32-sc01-plus"
             WIDE_SCREEN="480x320"
             TALL_SCREEN="320x480"
@@ -82,7 +82,7 @@ function menu() {
 
         7)  #   M5STACK ATOM-S3
 
-            FIRMWARE="S3LCD_8M"
+            FIRMWARE="GENERIC_S3_8M"
             CONFIG="m5stack-atom-s3"
             WIDE_SCREEN="128x128"
             TALL_SCREEN="128x128"
@@ -92,7 +92,7 @@ function menu() {
 
         8)  #   M5STACK CORES3
 
-            FIRMWARE="S3LCD_QUAD_16M"
+            FIRMWARE="GENERIC_S3_16M"
             CONFIG="m5stack-cores3"
             WIDE_SCREEN="320x240"
             TALL_SCREEN="240x320"
@@ -102,7 +102,7 @@ function menu() {
 
         9)  #   BPI-Centi-S3
 
-            FIRMWARE="S3LCD_QUAD_8M"
+            FIRMWARE="GENERIC_S3_8M"
             CONFIG="bpi-centi-s3"
             WIDE_SCREEN="320x170"
             TARL_SCREEN="170x320"
@@ -112,7 +112,7 @@ function menu() {
 
         10) #  LilyGo T-Qt Pro
 
-            FIRMWARE="S3LCD_QUAD_4M"
+            FIRMWARE="GENERIC_S3_4M"
             CONFIG="t-qt-pro"
             WIDE_SCREEN="128x128"
             TALL_SCREEN="128x128"
