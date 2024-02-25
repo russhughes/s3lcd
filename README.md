@@ -368,14 +368,14 @@ page for more detailed information on building the MicroPython firmware.
 
 
 ```
-$ git clone git@github.com:micropython/micropython.git
-$ git clone https://github.com/russhughes/s3lcd.git
+git clone git@github.com:micropython/micropython.git
+git clone https://github.com/russhughes/s3lcd.git
 ```
 
 Compile the cross compiler if you haven't already
 
 ```
-$ make -C micropython/mpy-cross
+make -C micropython/mpy-cross
 ```
 
 ## ESP32 MicroPython 1.14 thru 1.19
@@ -383,26 +383,26 @@ $ make -C micropython/mpy-cross
 Change to the ESP32 port directory
 
 ```
-$ cd micropython/ports/esp32
+cd micropython/ports/esp32
 ```
 
 Compile the module with specified USER_C_MODULES dir
 
 ```
-$ make USER_C_MODULES=../../../../s3lcd/src/micropython.cmake clean submodules all
+make USER_C_MODULES=../../../../s3lcd/src/micropython.cmake clean submodules all
 ```
 
 Erase the target device if this is the first time uploading this
 firmware
 
 ```
-$ make USER_C_MODULES=../../../../s3lcd/src/micropython.cmake erase
+make USER_C_MODULES=../../../../s3lcd/src/micropython.cmake erase
 ```
 
 Upload the new firmware
 
 ```
-$ make USER_C_MODULES=../../../../s3lcd/src/micropython.cmake deploy
+make USER_C_MODULES=../../../../s3lcd/src/micropython.cmake deploy
 ```
 
 ## ESP32 MicroPython 1.20 and later
@@ -411,9 +411,9 @@ $ make USER_C_MODULES=../../../../s3lcd/src/micropython.cmake deploy
 Change to the ESP32 port directory, and build the firmware
 
 ```
-$ cd micropython/ports/esp32
+cd micropython/ports/esp32
 
-$ make \
+make \
     BOARD=ESP32_GENERIC \
     BOARD_VARIANT=SPIRAM \
     USER_C_MODULES=../../../../s3lcd/src/micropython.cmake \
@@ -424,7 +424,7 @@ $ make \
 Erase the flash and deploy on your device
 
 ```
-$ make \
+make \
     BOARD=ESP32_GENERIC \
     BOARD_VARIANT=SPIRAM \
     USER_C_MODULES=../../../../s3lcd/src/micropython.cmake \
@@ -437,8 +437,8 @@ $ make \
 Change to the RP2 port directory, and build the firmware
 
 ```
-$ cd micropython/ports/rp2
-$ make \
+cd micropython/ports/rp2
+make \
     BOARD=RPI_PICO \
     FROZEN_MANIFEST=../../../../gc9a01c/manifest.py \
     USER_C_MODULES=../../../gc9a01c/src/micropython.cmake \
