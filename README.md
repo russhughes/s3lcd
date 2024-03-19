@@ -154,6 +154,12 @@ Note: Curly braces `{` and `}` enclose optional parameters and do not imply a Py
 
     Frees the buffer memory and deinitializes the I80_BUF or SPI_BUF object. Call this method before reinitializing the display without performing a hard reset.
 
+- `idle_mode(value)`
+
+    Set idle mode
+
+    `value`: True to enable idle mode, False to idle disable idle mode.
+
 - `show()`
 
     Update the display from the framebuffer. You must use the show() method to transfer the framebuffer to the display. This method blocks until the display refresh is complete.
