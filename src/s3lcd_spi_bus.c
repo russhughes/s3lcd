@@ -13,7 +13,7 @@
 #include "s3lcd_spi_bus.h"
 #include <string.h>
 
-STATIC void s3lcd_spi_bus_print(const mp_print_t *print, mp_obj_t self_in, mp_print_kind_t kind) {
+static void s3lcd_spi_bus_print(const mp_print_t *print, mp_obj_t self_in, mp_print_kind_t kind) {
     (void) kind;
     s3lcd_spi_bus_obj_t *self = MP_OBJ_TO_PTR(self_in);
     mp_printf(print, "<SPI %s, sck=%d, mosi=%d, dc=%d, cs=%d, spi_mode=%d, pclk=%d, lcd_cmd_bits=%d, "
@@ -63,7 +63,7 @@ STATIC void s3lcd_spi_bus_print(const mp_print_t *print, mp_obj_t self_in, mp_pr
 ///   - swap_color_bytes: (bool) Swap data byte order
 ///
 
-STATIC mp_obj_t s3lcd_spi_bus_make_new(const mp_obj_type_t *type, size_t n_args, size_t n_kw, const mp_obj_t *all_args)
+static mp_obj_t s3lcd_spi_bus_make_new(const mp_obj_type_t *type, size_t n_args, size_t n_kw, const mp_obj_t *all_args)
 {
     enum {
         ARG_spi_host,           // SPI host to use
@@ -85,7 +85,7 @@ STATIC mp_obj_t s3lcd_spi_bus_make_new(const mp_obj_type_t *type, size_t n_args,
 
     };
 
-    STATIC const mp_arg_t allowed_args[] = {
+    static const mp_arg_t allowed_args[] = {
         { MP_QSTR_spi_host,         MP_ARG_INT  | MP_ARG_REQUIRED,                     },
         { MP_QSTR_sck,              MP_ARG_INT  | MP_ARG_REQUIRED,                     },
         { MP_QSTR_mosi,             MP_ARG_INT  | MP_ARG_REQUIRED,                     },
@@ -130,9 +130,9 @@ STATIC mp_obj_t s3lcd_spi_bus_make_new(const mp_obj_type_t *type, size_t n_args,
     return MP_OBJ_FROM_PTR(self);
 }
 
-STATIC const mp_rom_map_elem_t s3lcd_spi_bus_locals_dict_table[] = {
+static const mp_rom_map_elem_t s3lcd_spi_bus_locals_dict_table[] = {
 };
-STATIC MP_DEFINE_CONST_DICT(s3lcd_spi_bus_locals_dict, s3lcd_spi_bus_locals_dict_table);
+static MP_DEFINE_CONST_DICT(s3lcd_spi_bus_locals_dict, s3lcd_spi_bus_locals_dict_table);
 
 #if MICROPY_OBJ_TYPE_REPR == MICROPY_OBJ_TYPE_REPR_SLOT_INDEX
 

@@ -13,7 +13,7 @@
 #include "s3lcd_i80_bus.h"
 #include <string.h>
 
-STATIC void s3lcd_i80_bus_print(const mp_print_t *print, mp_obj_t self_in, mp_print_kind_t kind) {
+static void s3lcd_i80_bus_print(const mp_print_t *print, mp_obj_t self_in, mp_print_kind_t kind) {
     (void) kind;
     s3lcd_i80_bus_obj_t *self = MP_OBJ_TO_PTR(self_in);
     mp_printf(print, "<I80 %s, dc=%d, wr=%d, rd=%d, cs=%d, pclk=%d, bus_width=%d, lcd_cmd_bits=%d, lcd_param_bits=%d, dc_idle_level=%d, dc_cmd_level=%d, dc_dummy_level=%d, dc_data_level=%d, cs_active_high=%d, reverse_color_bits=%d, swap_color_bytes=%d, pclk_active_neg=%d, pclk_idle_low=%d>",
@@ -62,7 +62,7 @@ STATIC void s3lcd_i80_bus_print(const mp_print_t *print, mp_obj_t self_in, mp_pr
 ///   - pclk_idle_low: pixel clock is idle low
 ///
 
-STATIC mp_obj_t s3lcd_i80_bus_make_new(const mp_obj_type_t *type, size_t n_args, size_t n_kw, const mp_obj_t *all_args)
+static mp_obj_t s3lcd_i80_bus_make_new(const mp_obj_type_t *type, size_t n_args, size_t n_kw, const mp_obj_t *all_args)
 {
     enum {
         ARG_data,
@@ -85,7 +85,7 @@ STATIC mp_obj_t s3lcd_i80_bus_make_new(const mp_obj_type_t *type, size_t n_args,
         ARG_pclk_idle_low,
     };
 
-    STATIC const mp_arg_t allowed_args[] = {
+    static const mp_arg_t allowed_args[] = {
         { MP_QSTR_data,                 MP_ARG_OBJ  | MP_ARG_REQUIRED                      },
         { MP_QSTR_dc,                   MP_ARG_INT  | MP_ARG_REQUIRED                      },
         { MP_QSTR_wr,                   MP_ARG_INT  | MP_ARG_REQUIRED                      },
@@ -149,9 +149,9 @@ STATIC mp_obj_t s3lcd_i80_bus_make_new(const mp_obj_type_t *type, size_t n_args,
     return MP_OBJ_FROM_PTR(self);
 }
 
-STATIC const mp_rom_map_elem_t s3lcd_i80_bus_locals_dict_table[] = {
+static const mp_rom_map_elem_t s3lcd_i80_bus_locals_dict_table[] = {
 };
-STATIC MP_DEFINE_CONST_DICT(s3lcd_i80_bus_locals_dict, s3lcd_i80_bus_locals_dict_table);
+static MP_DEFINE_CONST_DICT(s3lcd_i80_bus_locals_dict, s3lcd_i80_bus_locals_dict_table);
 
 #if MICROPY_OBJ_TYPE_REPR == MICROPY_OBJ_TYPE_REPR_SLOT_INDEX
 

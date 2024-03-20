@@ -169,26 +169,26 @@ s3lcd_rotation_t *ROTATIONS[] = {
 // flag to indicate an esp_lcd_panel_draw_bitmap operation is in progress
 //
 
-STATIC volatile bool lcd_panel_active = false;
+static volatile bool lcd_panel_active = false;
 
-STATIC void s3lcd_print(const mp_print_t *print, mp_obj_t self_in, mp_print_kind_t kind) {
+static void s3lcd_print(const mp_print_t *print, mp_obj_t self_in, mp_print_kind_t kind) {
     (void)kind;
     s3lcd_obj_t *self = MP_OBJ_TO_PTR(self_in);
     mp_printf(print, "<s3lcd width=%u, height=%u rotation=%u color_space=%u>", self->width, self->height, self->rotation, self->color_space);
 }
 
-// STATIC int brightness(uint16_t color) {
+// static int brightness(uint16_t color) {
 //     uint8_t r = (color & 0xf800) >> 10;
 //     uint8_t g = (color & 0x07e0) >> 4;
 //     uint8_t b = (color & 0x001f) << 1;
 //     return (int)sqrtf(r * .241 + g * .691 + b * .068);
 // }
 
-STATIC uint16_t color565(uint8_t r, uint8_t g, uint8_t b) {
+static uint16_t color565(uint8_t r, uint8_t g, uint8_t b) {
     return (uint16_t) ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | ((b & 0xF8) >> 3);
 }
 
-STATIC uint16_t alpha_blend_565(uint16_t fg, uint16_t bg, uint8_t alpha) {
+static uint16_t alpha_blend_565(uint16_t fg, uint16_t bg, uint8_t alpha) {
     if (alpha == 0) {
         return bg;
     }
@@ -230,7 +230,7 @@ STATIC uint16_t alpha_blend_565(uint16_t fg, uint16_t bg, uint8_t alpha) {
     }                                                       \
 }
 
-STATIC void _setpixel(s3lcd_obj_t *self, uint16_t x, uint16_t y, uint16_t color, uint8_t alpha) {
+static void _setpixel(s3lcd_obj_t *self, uint16_t x, uint16_t y, uint16_t color, uint8_t alpha) {
     if ((x < self->width) && (y < self->height)) {
         uint16_t *b = self->frame_buffer + y * self->width + x;
         if (alpha < 255) {
@@ -240,18 +240,18 @@ STATIC void _setpixel(s3lcd_obj_t *self, uint16_t x, uint16_t y, uint16_t color,
     }
 }
 
-// STATIC uint16_t _getpixel(s3lcd_obj_t *self, uint16_t x, uint16_t y) {
+// static uint16_t _getpixel(s3lcd_obj_t *self, uint16_t x, uint16_t y) {
 //     return *(self->frame_buffer + x + y * self->width);
 // }
 
-STATIC void _fill(s3lcd_obj_t *self, uint16_t color) {
+static void _fill(s3lcd_obj_t *self, uint16_t color) {
     uint16_t *b = self->frame_buffer;
     for (size_t i = 0; i < self->width * self->height; ++i) {
         *b++ = color;
     }
 }
 
-STATIC void _fill_rect(s3lcd_obj_t *self, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color, uint8_t alpha) {
+static void _fill_rect(s3lcd_obj_t *self, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color, uint8_t alpha) {
 
     if (x >= self->width || (y >= self->height)) {
         return;
@@ -283,7 +283,7 @@ STATIC void _fill_rect(s3lcd_obj_t *self, uint16_t x, uint16_t y, uint16_t w, ui
     }
 }
 
-STATIC int mod(int x, int m) {
+static int mod(int x, int m) {
     int r = x % m;
     return (r < 0) ? r + m : r;
 }
@@ -323,7 +323,7 @@ void fast_hline(s3lcd_obj_t *self, int16_t x, int16_t y, int16_t w, uint16_t col
     }
 }
 
-STATIC void fast_vline(s3lcd_obj_t *self, int16_t x, int16_t y, int16_t h, uint16_t color, uint8_t alpha) {
+static void fast_vline(s3lcd_obj_t *self, int16_t x, int16_t y, int16_t h, uint16_t color, uint8_t alpha) {
     if ((self->options & OPTIONS_WRAP) == 0) {
         if (x >= 0 && self->width > x && self->height > y) {
             if (0 > y) {
@@ -351,12 +351,12 @@ STATIC void fast_vline(s3lcd_obj_t *self, int16_t x, int16_t y, int16_t h, uint1
 /// Reset the display.
 ///
 
-STATIC mp_obj_t s3lcd_reset(mp_obj_t self_in) {
+static mp_obj_t s3lcd_reset(mp_obj_t self_in) {
     s3lcd_obj_t *self = MP_OBJ_TO_PTR(self_in);
     esp_lcd_panel_reset(self->panel_handle);
     return mp_const_none;
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_1(s3lcd_reset_obj, s3lcd_reset);
+static MP_DEFINE_CONST_FUN_OBJ_1(s3lcd_reset_obj, s3lcd_reset);
 
 ///
 /// .inversion_mode(value)
@@ -365,13 +365,13 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_1(s3lcd_reset_obj, s3lcd_reset);
 /// -- value: True to enable inversion mode, False to disable.
 ///
 
-STATIC mp_obj_t s3lcd_inversion_mode(mp_obj_t self_in, mp_obj_t value) {
+static mp_obj_t s3lcd_inversion_mode(mp_obj_t self_in, mp_obj_t value) {
     s3lcd_obj_t *self = MP_OBJ_TO_PTR(self_in);
     self->inversion_mode = mp_obj_is_true(value);
     esp_lcd_panel_invert_color(self->panel_handle, self->inversion_mode);
     return mp_const_none;
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_2(s3lcd_inversion_mode_obj, s3lcd_inversion_mode);
+static MP_DEFINE_CONST_FUN_OBJ_2(s3lcd_inversion_mode_obj, s3lcd_inversion_mode);
 
 ///
 /// .idle_mode(value)
@@ -380,7 +380,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_2(s3lcd_inversion_mode_obj, s3lcd_inversion_mode)
 /// -- value: True to enable idle mode, False to idle.
 ///
 
-STATIC mp_obj_t s3lcd_idle_mode(mp_obj_t self_in, mp_obj_t value) {
+static mp_obj_t s3lcd_idle_mode(mp_obj_t self_in, mp_obj_t value) {
     s3lcd_obj_t *self = MP_OBJ_TO_PTR(self_in);
     if(mp_obj_is_true(value))
         esp_lcd_panel_io_tx_param(self->io_handle, ST77XX_IDLEON, NULL, 0);
@@ -388,7 +388,7 @@ STATIC mp_obj_t s3lcd_idle_mode(mp_obj_t self_in, mp_obj_t value) {
         esp_lcd_panel_io_tx_param(self->io_handle, ST77XX_IDLEOFF, NULL, 0);
     return mp_const_none;
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_2(s3lcd_idle_mode_obj, s3lcd_idle_mode);
+static MP_DEFINE_CONST_FUN_OBJ_2(s3lcd_idle_mode_obj, s3lcd_idle_mode);
 
 ///
 /// .fill_rect(x, y, w, h{, color, alpha})
@@ -403,7 +403,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_2(s3lcd_idle_mode_obj, s3lcd_idle_mode);
 /// -- alpha: alpha value of the rectangle
 ///
 
-STATIC mp_obj_t s3lcd_fill_rect(size_t n_args, const mp_obj_t *args) {
+static mp_obj_t s3lcd_fill_rect(size_t n_args, const mp_obj_t *args) {
     s3lcd_obj_t *self = MP_OBJ_TO_PTR(args[0]);
     mp_int_t x = mp_obj_get_int(args[1]);
     mp_int_t y = mp_obj_get_int(args[2]);
@@ -415,7 +415,7 @@ STATIC mp_obj_t s3lcd_fill_rect(size_t n_args, const mp_obj_t *args) {
     _fill_rect(self, x, y, w, h, color, alpha);
     return mp_const_none;
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_fill_rect_obj, 6, 7, s3lcd_fill_rect);
+static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_fill_rect_obj, 6, 7, s3lcd_fill_rect);
 
 
 ///
@@ -426,13 +426,13 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_fill_rect_obj, 6, 7, s3lcd_fill
 /// -- 8_bit_color defaults to 0x00 BLACK
 ///
 
-STATIC mp_obj_t s3lcd_clear(size_t n_args, const mp_obj_t *args) {
+static mp_obj_t s3lcd_clear(size_t n_args, const mp_obj_t *args) {
     s3lcd_obj_t *self = MP_OBJ_TO_PTR(args[0]);
     OPTIONAL_ARG(1, mp_int_t, mp_obj_get_int, color, BLACK)
     memset(self->frame_buffer, color & 0xff , self->frame_buffer_size);
     return mp_const_none;
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_clear_obj, 2, 3, s3lcd_clear);
+static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_clear_obj, 2, 3, s3lcd_clear);
 
 
 ///
@@ -443,7 +443,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_clear_obj, 2, 3, s3lcd_clear);
 /// -- alpha defaults to 255
 ///
 
-STATIC mp_obj_t s3lcd_fill(size_t n_args, const mp_obj_t *args) {
+static mp_obj_t s3lcd_fill(size_t n_args, const mp_obj_t *args) {
     s3lcd_obj_t *self = MP_OBJ_TO_PTR(args[0]);
     OPTIONAL_ARG(1, mp_int_t, mp_obj_get_int, color, BLACK)
     // OPTIONAL_ARG(2, mp_int_t, mp_obj_get_int, alpha, 255)
@@ -451,7 +451,7 @@ STATIC mp_obj_t s3lcd_fill(size_t n_args, const mp_obj_t *args) {
     _fill(self, color);
     return mp_const_none;
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_fill_obj, 2, 3, s3lcd_fill);
+static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_fill_obj, 2, 3, s3lcd_fill);
 
 
 ///
@@ -465,7 +465,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_fill_obj, 2, 3, s3lcd_fill);
 /// -- alpha defaults to 255
 ///
 
-STATIC mp_obj_t s3lcd_pixel(size_t n_args, const mp_obj_t *args) {
+static mp_obj_t s3lcd_pixel(size_t n_args, const mp_obj_t *args) {
     s3lcd_obj_t *self = MP_OBJ_TO_PTR(args[0]);
     mp_int_t x = mp_obj_get_int(args[1]);
     mp_int_t y = mp_obj_get_int(args[2]);
@@ -475,10 +475,10 @@ STATIC mp_obj_t s3lcd_pixel(size_t n_args, const mp_obj_t *args) {
     draw_pixel(self, x, y, color, alpha);
     return mp_const_none;
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_pixel_obj, 4, 5, s3lcd_pixel);
+static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_pixel_obj, 4, 5, s3lcd_pixel);
 
 
-STATIC void line(s3lcd_obj_t *self, int16_t x0, int16_t y0, int16_t x1, int16_t y1, int16_t color, uint8_t alpha) {
+static void line(s3lcd_obj_t *self, int16_t x0, int16_t y0, int16_t x1, int16_t y1, int16_t color, uint8_t alpha) {
     bool steep = ABS(y1 - y0) > ABS(x1 - x0);
     if (steep) {
         _swap_int16_t(x0, y0);
@@ -552,7 +552,7 @@ STATIC void line(s3lcd_obj_t *self, int16_t x0, int16_t y0, int16_t x1, int16_t 
 /// -- alpha defaults to 255
 ///
 
-STATIC mp_obj_t s3lcd_line(size_t n_args, const mp_obj_t *args) {
+static mp_obj_t s3lcd_line(size_t n_args, const mp_obj_t *args) {
     s3lcd_obj_t *self = MP_OBJ_TO_PTR(args[0]);
     mp_int_t x0 = mp_obj_get_int(args[1]);
     mp_int_t y0 = mp_obj_get_int(args[2]);
@@ -564,7 +564,7 @@ STATIC mp_obj_t s3lcd_line(size_t n_args, const mp_obj_t *args) {
     line(self, x0, y0, x1, y1, color, alpha);
     return mp_const_none;
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_line_obj, 6, 7, s3lcd_line);
+static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_line_obj, 6, 7, s3lcd_line);
 
 ///
 /// .blit_buffer(buffer, x, y, width, height {,alpha})
@@ -579,7 +579,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_line_obj, 6, 7, s3lcd_line);
 /// -- alpha defaults to 255
 ///
 
-STATIC mp_obj_t s3lcd_blit_buffer(size_t n_args, const mp_obj_t *args) {
+static mp_obj_t s3lcd_blit_buffer(size_t n_args, const mp_obj_t *args) {
     s3lcd_obj_t *self = MP_OBJ_TO_PTR(args[0]);
     mp_buffer_info_t buf_info;
     mp_get_buffer_raise(args[1], &buf_info, MP_BUFFER_READ);
@@ -610,7 +610,7 @@ STATIC mp_obj_t s3lcd_blit_buffer(size_t n_args, const mp_obj_t *args) {
 
     return mp_const_none;
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_blit_buffer_obj, 6, 7, s3lcd_blit_buffer);
+static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_blit_buffer_obj, 6, 7, s3lcd_blit_buffer);
 
 ///
 /// .draw(font, string|int, x, y, {color , scale, alpha})
@@ -626,7 +626,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_blit_buffer_obj, 6, 7, s3lcd_bl
 /// -- alpha defaults to 255
 ///
 
-STATIC mp_obj_t s3lcd_draw(size_t n_args, const mp_obj_t *args) {
+static mp_obj_t s3lcd_draw(size_t n_args, const mp_obj_t *args) {
     s3lcd_obj_t *self = MP_OBJ_TO_PTR(args[0]);
     char single_char_s[] = {0, 0};
     const char *s;
@@ -719,7 +719,7 @@ STATIC mp_obj_t s3lcd_draw(size_t n_args, const mp_obj_t *args) {
     }
     return mp_const_none;
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_draw_obj, 5, 8, s3lcd_draw);
+static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_draw_obj, 5, 8, s3lcd_draw);
 
 ///
 /// .draw_len(font, string|int {, scale})
@@ -731,7 +731,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_draw_obj, 5, 8, s3lcd_draw);
 /// -- scale: scale of the string (default 1)
 ///
 
-STATIC mp_obj_t s3lcd_draw_len(size_t n_args, const mp_obj_t *args) {
+static mp_obj_t s3lcd_draw_len(size_t n_args, const mp_obj_t *args) {
     char single_char_s[] = {0, 0};
     const char *s;
 
@@ -783,12 +783,12 @@ STATIC mp_obj_t s3lcd_draw_len(size_t n_args, const mp_obj_t *args) {
     }
     return mp_obj_new_int((int)(print_width * scale + 0.5));
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_draw_len_obj, 3, 4, s3lcd_draw_len);
+static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_draw_len_obj, 3, 4, s3lcd_draw_len);
 
-STATIC uint32_t bs_bit = 0;
+static uint32_t bs_bit = 0;
 uint8_t *bitmap_data = NULL;
 
-STATIC uint8_t get_color(uint8_t bpp) {
+static uint8_t get_color(uint8_t bpp) {
     uint8_t color = 0;
     int i;
 
@@ -800,7 +800,7 @@ STATIC uint8_t get_color(uint8_t bpp) {
     return color;
 }
 
-STATIC mp_obj_t dict_lookup(mp_obj_t self_in, mp_obj_t index) {
+static mp_obj_t dict_lookup(mp_obj_t self_in, mp_obj_t index) {
     mp_obj_dict_t *self = MP_OBJ_TO_PTR(self_in);
     mp_map_elem_t *elem = mp_map_lookup(&self->map, index, MP_MAP_LOOKUP);
     if (elem) {
@@ -817,7 +817,7 @@ STATIC mp_obj_t dict_lookup(mp_obj_t self_in, mp_obj_t index) {
 /// -- string: a string or a single character
 ///
 
-STATIC mp_obj_t s3lcd_write_len(size_t n_args, const mp_obj_t *args) {
+static mp_obj_t s3lcd_write_len(size_t n_args, const mp_obj_t *args) {
     mp_obj_module_t *font = MP_OBJ_TO_PTR(args[1]);
     mp_obj_dict_t *dict = MP_OBJ_TO_PTR(font->globals);
     mp_obj_t widths_data_buff = mp_obj_dict_get(dict, MP_OBJ_NEW_QSTR(MP_QSTR_WIDTHS));
@@ -854,7 +854,7 @@ STATIC mp_obj_t s3lcd_write_len(size_t n_args, const mp_obj_t *args) {
     }
     return mp_obj_new_int(print_width);
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_write_len_obj, 3, 3, s3lcd_write_len);
+static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_write_len_obj, 3, 3, s3lcd_write_len);
 
 ///
 ///	.write(font, s, x, y {, fg, bg, alpha})
@@ -870,7 +870,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_write_len_obj, 3, 3, s3lcd_writ
 /// -- alpha: the alpha value of the string or character
 ///
 
-STATIC mp_obj_t s3lcd_write(size_t n_args, const mp_obj_t *args) {
+static mp_obj_t s3lcd_write(size_t n_args, const mp_obj_t *args) {
     s3lcd_obj_t *self = MP_OBJ_TO_PTR(args[0]);
     mp_obj_module_t *font = MP_OBJ_TO_PTR(args[1]);
 
@@ -970,7 +970,7 @@ STATIC mp_obj_t s3lcd_write(size_t n_args, const mp_obj_t *args) {
     }
     return mp_obj_new_int(print_width);
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_write_obj, 5, 8, s3lcd_write);
+static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_write_obj, 5, 8, s3lcd_write);
 
 ///
 /// .bitmap(bitmap, x, y {, alpha})
@@ -982,7 +982,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_write_obj, 5, 8, s3lcd_write);
 /// -- alpha: alpha value (0-255)
 ///
 
-STATIC mp_obj_t s3lcd_bitmap_from_tuple(size_t n_args, const mp_obj_t *args) {
+static mp_obj_t s3lcd_bitmap_from_tuple(size_t n_args, const mp_obj_t *args) {
     s3lcd_obj_t *self = MP_OBJ_TO_PTR(args[0]);
     mp_obj_t *bitmap_tuple = NULL;
     size_t bitmap_tuple_len = 0;
@@ -1025,7 +1025,7 @@ STATIC mp_obj_t s3lcd_bitmap_from_tuple(size_t n_args, const mp_obj_t *args) {
 /// -- alpha: alpha value (0-255)
 ///
 
-STATIC mp_obj_t s3lcd_bitmap_from_module(size_t n_args, const mp_obj_t *args) {
+static mp_obj_t s3lcd_bitmap_from_module(size_t n_args, const mp_obj_t *args) {
     s3lcd_obj_t *self = MP_OBJ_TO_PTR(args[0]);
     mp_obj_module_t *bitmap = MP_OBJ_TO_PTR(args[1]);
     mp_int_t x = mp_obj_get_int(args[2]);
@@ -1078,7 +1078,7 @@ STATIC mp_obj_t s3lcd_bitmap_from_module(size_t n_args, const mp_obj_t *args) {
     return mp_const_none;
 }
 
-STATIC mp_obj_t s3lcd_bitmap(size_t n_args, const mp_obj_t *args) {
+static mp_obj_t s3lcd_bitmap(size_t n_args, const mp_obj_t *args) {
 
     if (mp_obj_is_type(args[1], &mp_type_tuple)) {
         return s3lcd_bitmap_from_tuple(n_args, args);
@@ -1092,7 +1092,7 @@ STATIC mp_obj_t s3lcd_bitmap(size_t n_args, const mp_obj_t *args) {
     return mp_const_none;
 }
 
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_bitmap_obj, 4, 6, s3lcd_bitmap);
+static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_bitmap_obj, 4, 6, s3lcd_bitmap);
 
 ///
 /// .text(font, x, y, text {, color, background, alpha})
@@ -1108,7 +1108,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_bitmap_obj, 4, 6, s3lcd_bitmap)
 /// -- alpha: alpha value (0-255)
 ///
 
-STATIC mp_obj_t s3lcd_text(size_t n_args, const mp_obj_t *args) {
+static mp_obj_t s3lcd_text(size_t n_args, const mp_obj_t *args) {
     uint8_t single_char_s;
     const uint8_t *source = NULL;
     size_t source_len = 0;
@@ -1196,9 +1196,9 @@ STATIC mp_obj_t s3lcd_text(size_t n_args, const mp_obj_t *args) {
     return mp_const_none;
 }
 
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_text_obj, 5, 8, s3lcd_text);
+static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_text_obj, 5, 8, s3lcd_text);
 
-STATIC void set_rotation(s3lcd_obj_t *self) {
+static void set_rotation(s3lcd_obj_t *self) {
 
     s3lcd_rotation_t *rotation = &self->rotations[self->rotation % self->rotations_len];
     esp_lcd_panel_swap_xy(self->panel_handle, rotation->swap_xy);
@@ -1216,7 +1216,7 @@ STATIC void set_rotation(s3lcd_obj_t *self) {
 /// -- rotation: 0=Portrait, 1=Landscape, 2=Reverse Portrait (180), 3=Reverse Landscape (180)
 ///
 
-STATIC mp_obj_t s3lcd_rotation(mp_obj_t self_in, mp_obj_t value) {
+static mp_obj_t s3lcd_rotation(mp_obj_t self_in, mp_obj_t value) {
     s3lcd_obj_t *self = MP_OBJ_TO_PTR(self_in);
     mp_int_t rotation = mp_obj_get_int(value) % 4;
 
@@ -1224,29 +1224,29 @@ STATIC mp_obj_t s3lcd_rotation(mp_obj_t self_in, mp_obj_t value) {
     set_rotation(self);
     return mp_const_none;
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_2(s3lcd_rotation_obj, s3lcd_rotation);
+static MP_DEFINE_CONST_FUN_OBJ_2(s3lcd_rotation_obj, s3lcd_rotation);
 
 ///
 /// .width()
 /// Returns the width of the display in pixels.
 ///
 
-STATIC mp_obj_t s3lcd_width(mp_obj_t self_in) {
+static mp_obj_t s3lcd_width(mp_obj_t self_in) {
     s3lcd_obj_t *self = MP_OBJ_TO_PTR(self_in);
     return mp_obj_new_int(self->width);
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_1(s3lcd_width_obj, s3lcd_width);
+static MP_DEFINE_CONST_FUN_OBJ_1(s3lcd_width_obj, s3lcd_width);
 
 ///
 /// .height()
 /// Returns the height of the display in pixels.
 ///
 
-STATIC mp_obj_t s3lcd_height(mp_obj_t self_in) {
+static mp_obj_t s3lcd_height(mp_obj_t self_in) {
     s3lcd_obj_t *self = MP_OBJ_TO_PTR(self_in);
     return mp_obj_new_int(self->height);
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_1(s3lcd_height_obj, s3lcd_height);
+static MP_DEFINE_CONST_FUN_OBJ_1(s3lcd_height_obj, s3lcd_height);
 
 ///
 /// .vscrdef(tfa, vsa, bfa)
@@ -1257,7 +1257,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_1(s3lcd_height_obj, s3lcd_height);
 /// -- bfa: Bottom Fixed Area line
 ///
 
-STATIC mp_obj_t s3lcd_vscrdef(size_t n_args, const mp_obj_t *args) {
+static mp_obj_t s3lcd_vscrdef(size_t n_args, const mp_obj_t *args) {
     s3lcd_obj_t *self = MP_OBJ_TO_PTR(args[0]);
     mp_int_t tfa = mp_obj_get_int(args[1]);
     mp_int_t vsa = mp_obj_get_int(args[2]);
@@ -1267,7 +1267,7 @@ STATIC mp_obj_t s3lcd_vscrdef(size_t n_args, const mp_obj_t *args) {
     esp_lcd_panel_io_tx_param(self->io_handle, LCD_CMD_VSCRDEF, buf, 6);
     return mp_const_none;
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_vscrdef_obj, 4, 4, s3lcd_vscrdef);
+static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_vscrdef_obj, 4, 4, s3lcd_vscrdef);
 
 ///
 /// .vscsad(vssa)
@@ -1276,7 +1276,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_vscrdef_obj, 4, 4, s3lcd_vscrde
 /// -- vssa: Vertical Scrolling Start Address
 ///
 
-STATIC mp_obj_t s3lcd_vscsad(mp_obj_t self_in, mp_obj_t vssa_in) {
+static mp_obj_t s3lcd_vscsad(mp_obj_t self_in, mp_obj_t vssa_in) {
     s3lcd_obj_t *self = MP_OBJ_TO_PTR(self_in);
     mp_int_t vssa = mp_obj_get_int(vssa_in);
 
@@ -1284,9 +1284,9 @@ STATIC mp_obj_t s3lcd_vscsad(mp_obj_t self_in, mp_obj_t vssa_in) {
     esp_lcd_panel_io_tx_param(self->io_handle, ST77XX_VSCSAD, buf, 2);
     return mp_const_none;
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_2(s3lcd_vscsad_obj, s3lcd_vscsad);
+static MP_DEFINE_CONST_FUN_OBJ_2(s3lcd_vscsad_obj, s3lcd_vscsad);
 
-STATIC bool lcd_panel_done(esp_lcd_panel_io_handle_t panel_io, esp_lcd_panel_io_event_data_t *edata, void *user_ctx) {
+static bool lcd_panel_done(esp_lcd_panel_io_handle_t panel_io, esp_lcd_panel_io_event_data_t *edata, void *user_ctx) {
     lcd_panel_active = false;
     return false;
 }
@@ -1302,7 +1302,7 @@ STATIC bool lcd_panel_done(esp_lcd_panel_io_handle_t panel_io, esp_lcd_panel_io_
 ///
 /// Based on the MicroPython framedbuffer scroll function.
 
-STATIC mp_obj_t s3lcd_scroll(size_t n_args, const mp_obj_t *args) {
+static mp_obj_t s3lcd_scroll(size_t n_args, const mp_obj_t *args) {
     s3lcd_obj_t *self = MP_OBJ_TO_PTR(args[0]);
     mp_int_t xstep = mp_obj_get_int(args[1]);
     mp_int_t ystep = mp_obj_get_int(args[2]);
@@ -1355,13 +1355,13 @@ STATIC mp_obj_t s3lcd_scroll(size_t n_args, const mp_obj_t *args) {
     return mp_const_none;
 }
 
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_scroll_obj, 3, 4, s3lcd_scroll);
+static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_scroll_obj, 3, 4, s3lcd_scroll);
 
 //
 // run custom_init
 //
 
-STATIC void custom_init(s3lcd_obj_t *self) {
+static void custom_init(s3lcd_obj_t *self) {
     size_t init_len;
     mp_obj_t *init_list;
 
@@ -1396,7 +1396,7 @@ STATIC void custom_init(s3lcd_obj_t *self) {
 /// Initialize the display, This method must be called before any other methods.
 ///
 
-STATIC mp_obj_t s3lcd_init(mp_obj_t self_in) {
+static mp_obj_t s3lcd_init(mp_obj_t self_in) {
     s3lcd_obj_t *self = MP_OBJ_TO_PTR(self_in);
 
     if (mp_obj_is_type(self->bus, &s3lcd_i80_bus_type)) {
@@ -1513,7 +1513,7 @@ STATIC mp_obj_t s3lcd_init(mp_obj_t self_in) {
 
     return mp_const_none;
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_1(s3lcd_init_obj, s3lcd_init);
+static MP_DEFINE_CONST_FUN_OBJ_1(s3lcd_init_obj, s3lcd_init);
 
 ///
 /// .hline(x, y, w {, color, alpha})
@@ -1527,7 +1527,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_1(s3lcd_init_obj, s3lcd_init);
 /// -- alpha: alpha
 ///
 
-STATIC mp_obj_t s3lcd_hline(size_t n_args, const mp_obj_t *args) {
+static mp_obj_t s3lcd_hline(size_t n_args, const mp_obj_t *args) {
     s3lcd_obj_t *self = MP_OBJ_TO_PTR(args[0]);
     mp_int_t x = mp_obj_get_int(args[1]);
     mp_int_t y = mp_obj_get_int(args[2]);
@@ -1538,7 +1538,7 @@ STATIC mp_obj_t s3lcd_hline(size_t n_args, const mp_obj_t *args) {
     fast_hline(self, x, y, w, color, alpha);
     return mp_const_none;
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_hline_obj, 4, 6, s3lcd_hline);
+static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_hline_obj, 4, 6, s3lcd_hline);
 
 ///
 /// .vline(x, y, w {, color, alpha})
@@ -1552,7 +1552,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_hline_obj, 4, 6, s3lcd_hline);
 /// -- alpha: alpha
 ///
 
-STATIC mp_obj_t s3lcd_vline(size_t n_args, const mp_obj_t *args) {
+static mp_obj_t s3lcd_vline(size_t n_args, const mp_obj_t *args) {
     s3lcd_obj_t *self = MP_OBJ_TO_PTR(args[0]);
     mp_int_t x = mp_obj_get_int(args[1]);
     mp_int_t y = mp_obj_get_int(args[2]);
@@ -1563,7 +1563,7 @@ STATIC mp_obj_t s3lcd_vline(size_t n_args, const mp_obj_t *args) {
     fast_vline(self, x, y, w, color, alpha);
     return mp_const_none;
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_vline_obj, 4, 6, s3lcd_vline);
+static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_vline_obj, 4, 6, s3lcd_vline);
 
 // Circle/Fill_Circle by https://github.com/c-logic
 // https://github.com/russhughes/s3lcd_mpy/pull/46
@@ -1581,7 +1581,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_vline_obj, 4, 6, s3lcd_vline);
 /// -- alpha: alpha
 ///
 
-STATIC mp_obj_t s3lcd_circle(size_t n_args, const mp_obj_t *args) {
+static mp_obj_t s3lcd_circle(size_t n_args, const mp_obj_t *args) {
     s3lcd_obj_t *self = MP_OBJ_TO_PTR(args[0]);
     mp_int_t xm = mp_obj_get_int(args[1]);
     mp_int_t ym = mp_obj_get_int(args[2]);
@@ -1620,7 +1620,7 @@ STATIC mp_obj_t s3lcd_circle(size_t n_args, const mp_obj_t *args) {
     return mp_const_none;
 }
 
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_circle_obj, 4, 6, s3lcd_circle);
+static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_circle_obj, 4, 6, s3lcd_circle);
 
 // Circle/Fill_Circle by https://github.com/c-logic
 // https://github.com/russhughes/s3lcd_mpy/pull/46
@@ -1638,7 +1638,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_circle_obj, 4, 6, s3lcd_circle)
 /// -- alpha: alpha
 ///
 
-STATIC mp_obj_t s3lcd_fill_circle(size_t n_args, const mp_obj_t *args) {
+static mp_obj_t s3lcd_fill_circle(size_t n_args, const mp_obj_t *args) {
     s3lcd_obj_t *self = MP_OBJ_TO_PTR(args[0]);
     mp_int_t xm = mp_obj_get_int(args[1]);
     mp_int_t ym = mp_obj_get_int(args[2]);
@@ -1671,7 +1671,7 @@ STATIC mp_obj_t s3lcd_fill_circle(size_t n_args, const mp_obj_t *args) {
     return mp_const_none;
 }
 
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_fill_circle_obj, 4, 6, s3lcd_fill_circle);
+static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_fill_circle_obj, 4, 6, s3lcd_fill_circle);
 
 ///
 /// .rect(x, y, w, h {, color, alpha})
@@ -1686,7 +1686,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_fill_circle_obj, 4, 6, s3lcd_fi
 /// -- alpha: alpha
 ///
 
-STATIC mp_obj_t s3lcd_rect(size_t n_args, const mp_obj_t *args) {
+static mp_obj_t s3lcd_rect(size_t n_args, const mp_obj_t *args) {
     s3lcd_obj_t *self = MP_OBJ_TO_PTR(args[0]);
     mp_int_t x = mp_obj_get_int(args[1]);
     mp_int_t y = mp_obj_get_int(args[2]);
@@ -1702,7 +1702,7 @@ STATIC mp_obj_t s3lcd_rect(size_t n_args, const mp_obj_t *args) {
     return mp_const_none;
 }
 
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_rect_obj, 5, 7, s3lcd_rect);
+static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_rect_obj, 5, 7, s3lcd_rect);
 
 ///
 /// .color565(r, g, b)
@@ -1713,15 +1713,15 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_rect_obj, 5, 7, s3lcd_rect);
 /// -- b: blue
 ///
 
-STATIC mp_obj_t s3lcd_color565(mp_obj_t r, mp_obj_t g, mp_obj_t b) {
+static mp_obj_t s3lcd_color565(mp_obj_t r, mp_obj_t g, mp_obj_t b) {
     return MP_OBJ_NEW_SMALL_INT(color565(
         (uint8_t)mp_obj_get_int(r),
         (uint8_t)mp_obj_get_int(g),
         (uint8_t)mp_obj_get_int(b)));
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_3(s3lcd_color565_obj, s3lcd_color565);
+static MP_DEFINE_CONST_FUN_OBJ_3(s3lcd_color565_obj, s3lcd_color565);
 
-STATIC void map_bitarray_to_rgb565(uint8_t const *bitarray, uint16_t *buffer, int length, int width,
+static void map_bitarray_to_rgb565(uint8_t const *bitarray, uint16_t *buffer, int length, int width,
     uint16_t color, uint16_t bg_color) {
     int row_pos = 0;
     for (int i = 0; i < length; i++) {
@@ -1751,7 +1751,7 @@ STATIC void map_bitarray_to_rgb565(uint8_t const *bitarray, uint16_t *buffer, in
 /// -- bg_color: background color
 ///
 
-STATIC mp_obj_t s3lcd_map_bitarray_to_rgb565(size_t n_args, const mp_obj_t *args) {
+static mp_obj_t s3lcd_map_bitarray_to_rgb565(size_t n_args, const mp_obj_t *args) {
     mp_buffer_info_t bitarray_info;
     mp_buffer_info_t buffer_info;
 
@@ -1764,7 +1764,7 @@ STATIC mp_obj_t s3lcd_map_bitarray_to_rgb565(size_t n_args, const mp_obj_t *args
     map_bitarray_to_rgb565(bitarray_info.buf, buffer_info.buf, bitarray_info.len, width, color, bg_color);
     return mp_const_none;
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_map_bitarray_to_rgb565_obj, 3, 7, s3lcd_map_bitarray_to_rgb565);
+static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_map_bitarray_to_rgb565_obj, 3, 7, s3lcd_map_bitarray_to_rgb565);
 
 //
 // jpg routines
@@ -1815,7 +1815,7 @@ static unsigned int buffer_in_func(     // Returns number of bytes read (zero on
 // file input function
 //
 
-STATIC unsigned int file_in_func(           // Returns number of bytes read (zero on error)
+static unsigned int file_in_func(           // Returns number of bytes read (zero on error)
     JDEC *jd,                               // Decompression object
     uint8_t *buff,                          // Pointer to the read buffer (null to remove data)
     unsigned int nbyte) {                   // Number of bytes to read/remove
@@ -1836,7 +1836,7 @@ STATIC unsigned int file_in_func(           // Returns number of bytes read (zer
 // jpg output function
 //
 
-STATIC int jpg_out(                                         // 1:Ok, 0:Aborted
+static int jpg_out(                                         // 1:Ok, 0:Aborted
     JDEC *jd,                                               // Decompression object
     void *bitmap,                                           // Bitmap data to be output
     JRECT *rect) {                                          // Rectangular region of output image
@@ -1872,7 +1872,7 @@ STATIC int jpg_out(                                         // 1:Ok, 0:Aborted
 /// -- x: x
 /// -- y: y
 
-STATIC mp_obj_t s3lcd_jpg(size_t n_args, const mp_obj_t *args) {
+static mp_obj_t s3lcd_jpg(size_t n_args, const mp_obj_t *args) {
     s3lcd_obj_t *self = MP_OBJ_TO_PTR(args[0]);
     mp_int_t x = mp_obj_get_int(args[2]);
     mp_int_t y = mp_obj_get_int(args[3]);
@@ -1925,13 +1925,13 @@ STATIC mp_obj_t s3lcd_jpg(size_t n_args, const mp_obj_t *args) {
     m_free(self->work);     // Discard work area
     return mp_const_none;
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_jpg_obj, 4, 5, s3lcd_jpg);
+static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_jpg_obj, 4, 5, s3lcd_jpg);
 
 //
 // output function for jpg_decode
 //
 
-STATIC int out_crop(                                // 1:Ok, 0:Aborted
+static int out_crop(                                // 1:Ok, 0:Aborted
     JDEC *jd,                                       // Decompression object
     void *bitmap,                                   // Bitmap data to be output
     JRECT *rect) {                                  // Rectangular region of output image
@@ -1973,7 +1973,7 @@ STATIC int out_crop(                                // 1:Ok, 0:Aborted
 /// -- height: height
 ///
 
-STATIC mp_obj_t s3lcd_jpg_decode(size_t n_args, const mp_obj_t *args) {
+static mp_obj_t s3lcd_jpg_decode(size_t n_args, const mp_obj_t *args) {
     s3lcd_obj_t *self = MP_OBJ_TO_PTR(args[0]);
     const char *filename = NULL;
 
@@ -2072,7 +2072,7 @@ STATIC mp_obj_t s3lcd_jpg_decode(size_t n_args, const mp_obj_t *args) {
     }
     return mp_const_none;
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_jpg_decode_obj, 2, 6, s3lcd_jpg_decode);
+static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_jpg_decode_obj, 2, 6, s3lcd_jpg_decode);
 
 //
 // PNG Routines using the pngle library from https://github.com/kikuchan/pngle
@@ -2107,7 +2107,7 @@ void pngle_on_draw(pngle_t *pngle, uint32_t x, uint32_t y, uint32_t w, uint32_t 
 /// -- y: the y coordinate to draw the image
 ///
 
-STATIC mp_obj_t s3lcd_png(size_t n_args, const mp_obj_t *args) {
+static mp_obj_t s3lcd_png(size_t n_args, const mp_obj_t *args) {
     s3lcd_obj_t *self = MP_OBJ_TO_PTR(args[0]);
 
     mp_int_t x = mp_obj_get_int(args[2]);
@@ -2152,7 +2152,7 @@ STATIC mp_obj_t s3lcd_png(size_t n_args, const mp_obj_t *args) {
     self->work = NULL;
     return mp_const_none;
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_png_obj, 4, 4, s3lcd_png);
+static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_png_obj, 4, 4, s3lcd_png);
 
 //
 //  png_write fileio callback functions
@@ -2195,7 +2195,7 @@ void pngClose(PNGFILE *pFile) {
 //  -- file size in bytes
 //
 
-STATIC mp_obj_t s3lcd_png_write(size_t n_args, const mp_obj_t *args) {
+static mp_obj_t s3lcd_png_write(size_t n_args, const mp_obj_t *args) {
     s3lcd_obj_t *self = MP_OBJ_TO_PTR(args[0]);
     const char *filename = mp_obj_str_get_str(args[1]);
     int data_size = 0;
@@ -2247,7 +2247,7 @@ STATIC mp_obj_t s3lcd_png_write(size_t n_args, const mp_obj_t *args) {
 
     return mp_obj_new_int(data_size);
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_png_write_obj, 2, 6, s3lcd_png_write);
+static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_png_write_obj, 2, 6, s3lcd_png_write);
 
 ///
 /// .polygon_center(polygon)
@@ -2256,7 +2256,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_png_write_obj, 2, 6, s3lcd_png_
 /// -- polygon: a list of (x, y) tuples
 ///
 
-STATIC mp_obj_t s3lcd_polygon_center(size_t n_args, const mp_obj_t *args) {
+static mp_obj_t s3lcd_polygon_center(size_t n_args, const mp_obj_t *args) {
     size_t poly_len;
     mp_obj_t *polygon;
     mp_obj_get_array(args[1], &poly_len, &polygon);
@@ -2301,13 +2301,13 @@ STATIC mp_obj_t s3lcd_polygon_center(size_t n_args, const mp_obj_t *args) {
     mp_obj_t center[2] = {mp_obj_new_int(vsx), mp_obj_new_int(vsy)};
     return mp_obj_new_tuple(2, center);
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_polygon_center_obj, 2, 2, s3lcd_polygon_center);
+static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_polygon_center_obj, 2, 2, s3lcd_polygon_center);
 
 //
 // RotatePolygon: Rotate a polygon around a center point angle radians
 //
 
-STATIC void RotatePolygon(Polygon *polygon, Point center, mp_float_t angle) {
+static void RotatePolygon(Polygon *polygon, Point center, mp_float_t angle) {
     if (polygon->length == 0) {
         return;                                     /* reject null polygons */
 
@@ -2330,7 +2330,7 @@ STATIC void RotatePolygon(Polygon *polygon, Point center, mp_float_t angle) {
 //
 
 #define MAX_POLY_CORNERS 32
-STATIC void PolygonFill(s3lcd_obj_t *self, Polygon *polygon, Point location, uint16_t color, uint8_t alpha) {
+static void PolygonFill(s3lcd_obj_t *self, Polygon *polygon, Point location, uint16_t color, uint8_t alpha) {
     int nodes, nodeX[MAX_POLY_CORNERS], pixelY, i, j, swap;
 
     int minX = INT_MAX;
@@ -2427,7 +2427,7 @@ STATIC void PolygonFill(s3lcd_obj_t *self, Polygon *polygon, Point location, uin
 /// -- cy: y coordinate of the center of rotation
 ///
 
-STATIC mp_obj_t s3lcd_polygon(size_t n_args, const mp_obj_t *args) {
+static mp_obj_t s3lcd_polygon(size_t n_args, const mp_obj_t *args) {
     s3lcd_obj_t *self = MP_OBJ_TO_PTR(args[0]);
 
     size_t poly_len;
@@ -2506,7 +2506,7 @@ STATIC mp_obj_t s3lcd_polygon(size_t n_args, const mp_obj_t *args) {
     }
     return mp_const_none;
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_polygon_obj, 4, 9, s3lcd_polygon);
+static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_polygon_obj, 4, 9, s3lcd_polygon);
 
 //
 //  filled convex polygon
@@ -2527,7 +2527,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_polygon_obj, 4, 9, s3lcd_polygo
 /// -- cy: y coordinate of the center of rotation
 ///
 
-STATIC mp_obj_t s3lcd_fill_polygon(size_t n_args, const mp_obj_t *args) {
+static mp_obj_t s3lcd_fill_polygon(size_t n_args, const mp_obj_t *args) {
     s3lcd_obj_t *self = MP_OBJ_TO_PTR(args[0]);
 
     size_t poly_len;
@@ -2592,7 +2592,7 @@ STATIC mp_obj_t s3lcd_fill_polygon(size_t n_args, const mp_obj_t *args) {
     }
     return mp_const_none;
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_fill_polygon_obj, 4, 9, s3lcd_fill_polygon);
+static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_fill_polygon_obj, 4, 9, s3lcd_fill_polygon);
 
 
 //
@@ -2632,7 +2632,7 @@ void s3lcd_dma_display(s3lcd_obj_t *self, uint16_t *src, uint16_t row, uint16_t 
 /// Show the framebuffer.
 ///
 
-STATIC mp_obj_t s3lcd_show(size_t n_args, const mp_obj_t *args) {
+static mp_obj_t s3lcd_show(size_t n_args, const mp_obj_t *args) {
     s3lcd_obj_t *self = MP_OBJ_TO_PTR(args[0]);
     size_t pixels = self->dma_rows * self->width;
     uint16_t *fb = self->frame_buffer;
@@ -2649,14 +2649,14 @@ STATIC mp_obj_t s3lcd_show(size_t n_args, const mp_obj_t *args) {
     return mp_const_none;
 }
 
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_show_obj, 1, 1, s3lcd_show);
+static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_show_obj, 1, 1, s3lcd_show);
 
 ///
 /// .deinit()
 /// Deinitialize the s3lcd object and frees allocated memory.
 ///
 
-STATIC mp_obj_t s3lcd_deinit(size_t n_args, const mp_obj_t *args) {
+static mp_obj_t s3lcd_deinit(size_t n_args, const mp_obj_t *args) {
     s3lcd_obj_t *self = MP_OBJ_TO_PTR(args[0]);
 
     esp_lcd_panel_del(self->panel_handle);
@@ -2688,9 +2688,9 @@ STATIC mp_obj_t s3lcd_deinit(size_t n_args, const mp_obj_t *args) {
 
     return mp_const_none;
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_deinit_obj, 1, 1, s3lcd_deinit);
+static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(s3lcd_deinit_obj, 1, 1, s3lcd_deinit);
 
-STATIC const mp_rom_map_elem_t s3lcd_locals_dict_table[] = {
+static const mp_rom_map_elem_t s3lcd_locals_dict_table[] = {
     {MP_ROM_QSTR(MP_QSTR_write), MP_ROM_PTR(&s3lcd_write_obj)},
     {MP_ROM_QSTR(MP_QSTR_write_len), MP_ROM_PTR(&s3lcd_write_len_obj)},
     {MP_ROM_QSTR(MP_QSTR_reset), MP_ROM_PTR(&s3lcd_reset_obj)},
@@ -2729,7 +2729,7 @@ STATIC const mp_rom_map_elem_t s3lcd_locals_dict_table[] = {
     {MP_ROM_QSTR(MP_QSTR_show), MP_ROM_PTR(&s3lcd_show_obj)},
     {MP_ROM_QSTR(MP_QSTR_deinit), MP_ROM_PTR(&s3lcd_deinit_obj)},
 };
-STATIC MP_DEFINE_CONST_DICT(s3lcd_locals_dict, s3lcd_locals_dict_table);
+static MP_DEFINE_CONST_DICT(s3lcd_locals_dict, s3lcd_locals_dict_table);
 /* methods end */
 
 #if MICROPY_OBJ_TYPE_REPR == MICROPY_OBJ_TYPE_REPR_SLOT_INDEX
@@ -2803,7 +2803,7 @@ mp_obj_t s3lcd_make_new(const mp_obj_type_t *type,
         ARG_options,
     };
 
-    STATIC const mp_arg_t allowed_args[] = {
+    static const mp_arg_t allowed_args[] = {
         {MP_QSTR_bus, MP_ARG_OBJ | MP_ARG_REQUIRED, {.u_obj = MP_OBJ_NULL}},
         {MP_QSTR_width, MP_ARG_INT | MP_ARG_REQUIRED, {.u_int = TFT_WIDTH}},
         {MP_QSTR_height, MP_ARG_INT | MP_ARG_REQUIRED, {.u_int = TFT_HEIGHT}},
@@ -2877,7 +2877,7 @@ mp_obj_t s3lcd_make_new(const mp_obj_type_t *type,
     return MP_OBJ_FROM_PTR(self);
 }
 
-STATIC const mp_map_elem_t s3lcd_module_globals_table[] = {
+static const mp_map_elem_t s3lcd_module_globals_table[] = {
     {MP_ROM_QSTR(MP_QSTR___name__), MP_OBJ_NEW_QSTR(MP_QSTR_s3lcd)},
     {MP_ROM_QSTR(MP_QSTR_color565), (mp_obj_t)&s3lcd_color565_obj},
     {MP_ROM_QSTR(MP_QSTR_map_bitarray_to_rgb565), (mp_obj_t)&s3lcd_map_bitarray_to_rgb565_obj},
@@ -2902,7 +2902,7 @@ STATIC const mp_map_elem_t s3lcd_module_globals_table[] = {
     {MP_ROM_QSTR(MP_QSTR_WRAP_V), MP_ROM_INT(OPTIONS_WRAP_V)}
 };
 
-STATIC MP_DEFINE_CONST_DICT(mp_module_s3lcd_globals, s3lcd_module_globals_table);
+static MP_DEFINE_CONST_DICT(mp_module_s3lcd_globals, s3lcd_module_globals_table);
 
 const mp_obj_module_t mp_module_s3lcd = {
     .base = {&mp_type_module},
